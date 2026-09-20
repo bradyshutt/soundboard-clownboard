@@ -17,15 +17,16 @@ updated: 2026-09-20
 
 ## Status
 
-**TL;DR:** Production users report that almost none of the soundboard sounds work. The deployed JavaScript matches `main`; investigation is reproducing audible output rather than relying on the earlier exception-only browser smoke test.
+**TL;DR:** Production users report that almost none of the soundboard sounds work. The deployed JavaScript matches `main`; an instrumented mobile-Chrome run measured output from every synthesized pad, so the reported device/browser and meaning of “not working” are required to reproduce the failure.
 
 **Current state:**
-- `brady-bot-bug: phase 2/16 · config: baseline`
+- `brady-bot-bug: phase 3/16 · config: baseline`
 - Verdict: `actionable` · severity P2
-- Reproduction: pending
+- Reproduction: not established; production mobile Chrome emits measurable output for all 13 Web Audio pads and dispatches both speech phrases
 - Root-cause confidence: pending
 
 **Next actions:**
+- [ ] Obtain the reporting device/browser and whether affected pads are silent or merely incorrect.
 - [ ] Reproduce the reported playback failure with an audio-output assertion.
 - [ ] Trace the root cause and present fix options.
 
@@ -90,3 +91,6 @@ Phase 1 complete: classified the direct production report as actionable P2. The 
 
 ### 2026-09-20 — Codex
 Phase 2 complete: created this tracking document and framed success as restoring audible output for every playback pad.
+
+### 2026-09-20 — Codex
+Phase 3 stopped at the reproduction gate: an instrumented run against production on mobile Chrome measured non-zero peaks for all 13 Web Audio effects (0.176–0.688), observed both speech calls, and saw a running audio context. The user-reported failure remains unreproduced without the affected device/browser and clarification of silent versus incorrect output.
