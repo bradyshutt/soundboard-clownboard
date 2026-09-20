@@ -23,10 +23,10 @@ The HTML/CSS shell will fit twelve touch targets plus navigation inside the dyna
 
 2. **Implement the browser audio engine and effect library.**
    - Add `src/audio-engine.js` and `tests/audio-engine.test.js`.
-   - Centralize `AudioContext` creation/resume, per-sound active handle replacement, cleanup, gain limiting, speech cancellation, and disposal.
+   - Centralize `AudioContext` creation/resume, per-effect active handle replacement, cleanup, gain limiting, one global device-speech channel, and disposal.
    - Implement distinct procedural recipes for two horse calls, a generated 30-second gallop buffer, two clown horns, two engine revs, burnout, squeak, two meows, a short circus phrase/beat, and a warm rising pad; use device speech synthesis for “yee-haw” and generic-Western “howdy partner.”
    - Implement one shared gallop state machine: starting one-shot stops looping, starting looping stops one-shot, stopping/disposal clears the mode, and the loop UI derives from the actual engine state. Implement microphone request/live/error/off lifecycle with deterministic node disconnection and track stopping.
-   - Tests: injected fakes verify context resume, same-sound replacement, different-sound overlap, every gallop mode transition, microphone teardown, permission errors, and full engine disposal.
+   - Tests: injected fakes verify context resume, synthesized-effect overlap, the global speech channel, every gallop mode transition, microphone teardown, permission errors, reusable page release, and full engine disposal.
    - Verify: `npm test` and `npm run check`.
 
 3. **Wire and polish the mobile interaction surface.**
@@ -57,3 +57,4 @@ The HTML/CSS shell will fit twelve touch targets plus navigation inside the dyna
 - 2026-09-20: initial plan
 - 2026-09-20: defined a single gallop state machine and replaced the impossible pre-merge manual dispatch with a temporary branch-scoped push trigger after plan review
 - 2026-09-20: replaced Actions deployment with Pages branch-source publishing after the cloud credential rejected workflow-file pushes; production still publishes only `main`
+- 2026-09-20: clarified the browser's single global speech channel and reusable page-release lifecycle after the quick review

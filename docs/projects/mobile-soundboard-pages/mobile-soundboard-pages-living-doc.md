@@ -16,7 +16,7 @@ updated: 2026-09-20
 **TL;DR:** Build a mobile-first, install-free soundboard as a static GitHub Pages site. The app will show a 3×4 paginated grid, synthesize its sounds locally for immediate playback, and provide a microphone-monitor toggle for live projection.
 
 **Current state:**
-- brady-bot: phase 9/15 · config: quick merge · repo: personal
+- brady-bot: phase 10/15 · config: quick merge · repo: personal
 - All four implementation steps are complete; the feature-branch Pages preview passed its HTTPS mobile smoke test.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
@@ -87,6 +87,11 @@ First-release scope excludes recording, uploaded assets, persistence, service wo
 **Decision:** Supersede the temporary Actions trigger with branch-source Pages: deploy the feature branch for preview, then point Pages at `main` after the approved merge.
 **Consequences:** Deployment has no CI workflow, so local gates and live smoke tests carry verification; production maps directly to the contents of `main` as requested.
 
+### 2026-09-20 — Model spoken effects as one device channel
+**Context:** The Web Speech API exposes one global queue and `cancel()` stops every current and pending utterance, so it cannot provide independently stoppable speech effects.
+**Decision:** Synthesized effects may overlap, while starting either spoken phrase replaces any currently speaking phrase. The speech delivery remains generic and does not imitate a named performer.
+**Consequences:** Speech behavior is deterministic and matches the browser contract; the two spoken pads do not overlap one another.
+
 ## Journal
 
 ### 2026-09-20 — brady (human)
@@ -148,3 +153,9 @@ Phase 8 complete: opened draft PR #1 against `main` with the provisional review 
 
 ### 2026-09-20 — Codex
 Phase 9 skipped under the `quick` configuration; acceptance coverage remains tracked by the implementation plan and Phase 10 review.
+
+### 2026-09-20 — full-review (self)
+5 findings: 0 launch blockers, 3 correctness, 1 architecture, and 1 cleanup. Top finding: back-forward cache restores a disposed app. Report: docs/projects/mobile-soundboard-pages/full-review-guangzhou-2026-09-20-231255.md.
+
+### 2026-09-20 — Codex
+Phase 10 quick review triaged all five findings: fixed three verified lifecycle/concurrency bugs and one cleanup in `9e4be70`; deferred the future CI enforcement gate because the cloud credential cannot add workflow files. All 17 tests and syntax checks pass.
