@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#17120e" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="A pocket-sized collection of ridiculous sounds." />
+    <title>Clownboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Pocket noise machine</p>
+          <h1>Clownboard</h1>
+        </div>
+        <p class="page-count" id="page-count" aria-live="polite">1 / 2</p>
+      </header>
+
+      <section
+        class="sound-grid"
+        id="sound-grid"
+        aria-label="Sound effects"
+        aria-busy="true"
+      ></section>
+
+      <nav class="page-nav" aria-label="Sound pages">
+        <button class="nav-button" id="previous-page" type="button" disabled>
+          <span aria-hidden="true">&larr;</span>
+          Previous
+        </button>
+        <div class="page-dots" id="page-dots" aria-hidden="true"></div>
+        <button class="nav-button" id="next-page" type="button">
+          Next
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </nav>
+
+      <p class="sr-only" id="app-status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
