@@ -123,3 +123,6 @@ Phase 7 step 1 complete: added the sixteen-pad catalog, fixed twelve-slot paging
 
 ### 2026-09-20 — Codex
 Phase 7 step 2 complete: added the procedural effect library, generic speech delivery, shared gallop state machine, microphone lifecycle, cleanup, and passing engine tests.
+
+### 2026-09-20 — Codex
+Phase 7 step 3 complete: wired accessible mobile controls and state announcements, verified portrait/landscape layouts, exercised all fifteen playback paths, gallop transitions, microphone denial, and fake-device live/off behavior in Chrome.
