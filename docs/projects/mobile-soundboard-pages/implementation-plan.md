@@ -4,7 +4,7 @@
 
 Approved by plan review and Brady for implementation, merge to `main`, and production deployment.
 
-Progress: [x] step 1 [ ] step 2 [ ] step 3 [ ] step 4
+Progress: [x] step 1 [x] step 2 [ ] step 3 [ ] step 4
 
 ## Approach
 

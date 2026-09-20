@@ -120,3 +120,6 @@ Phase 6 gate approved: proceed autonomously through implementation, review, merg
 
 ### 2026-09-20 — Codex
 Phase 7 step 1 complete: added the sixteen-pad catalog, fixed twelve-slot paging model, mobile-first shell, and passing catalog/navigation tests.
+
+### 2026-09-20 — Codex
+Phase 7 step 2 complete: added the procedural effect library, generic speech delivery, shared gallop state machine, microphone lifecycle, cleanup, and passing engine tests.
