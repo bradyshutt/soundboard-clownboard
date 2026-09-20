@@ -16,11 +16,12 @@ updated: 2026-09-20
 **TL;DR:** Build a mobile-first, install-free soundboard as a static GitHub Pages site. The app will show a 3×4 paginated grid, synthesize its sounds locally for immediate playback, and provide a microphone-monitor toggle for live projection.
 
 **Current state:**
-- brady-bot: phase 10/15 · config: quick merge · repo: personal
+- brady-bot: phase 13/15 · config: quick merge · repo: personal
 - All four implementation steps are complete; the feature-branch Pages preview passed its HTTPS mobile smoke test.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
-- Brady authorized public visibility after private Pages eligibility failed; Pages is enabled and the feature-branch preview deployment is next.
+- Brady authorized public visibility after private Pages eligibility failed; Pages is enabled and serving the reviewed feature branch preview.
+- The quick review fixes are live and reverified, Pages checks are green, and PR #1 is ready to merge; CI enforcement remains a tracked follow-up.
 
 **Next actions:**
 - [x] Write and adversarially review the implementation plan.
@@ -159,3 +160,12 @@ Phase 9 skipped under the `quick` configuration; acceptance coverage remains tra
 
 ### 2026-09-20 — Codex
 Phase 10 quick review triaged all five findings: fixed three verified lifecycle/concurrency bugs and one cleanup in `9e4be70`; deferred the future CI enforcement gate because the cloud credential cannot add workflow files. All 17 tests and syntax checks pass.
+
+### 2026-09-20 — Codex
+Phase 11 skipped under the `quick` configuration; the required single review pass is complete.
+
+### 2026-09-20 — Codex
+Phase 12 complete: GitHub's Pages build, deploy, and build-status checks are green; the final preview matches the reviewed source and passes gallop concurrency, bfcache restoration, and microphone smoke tests.
+
+### 2026-09-20 — Codex
+Phase 13 complete: wrote the reviewer guide and finalized PR #1's description with decisions, verification, residual risk, and production deployment steps.
