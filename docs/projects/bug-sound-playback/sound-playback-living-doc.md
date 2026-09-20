@@ -20,14 +20,15 @@ updated: 2026-09-20
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 5/16 · config: baseline`
+- `brady-bot-bug: phase 6/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
 - Root-cause confidence: proven
 
 **Next actions:**
-- [ ] Confirm the recommended asset-backed root fix.
-- [ ] Write and review the regression-first implementation plan.
+- [x] Confirm the recommended asset-backed root fix.
+- [ ] Review the regression-first implementation plan.
+- [ ] Implement red-to-green in incremental commits.
 
 ---
 
@@ -77,6 +78,11 @@ Replace the acoustically generic recipes with curated, redistributable recording
 **Consequences:** What this implies; what it rules out.
 -->
 
+### 2026-09-20 — Replace every procedural effect with a curated recording
+**Context:** The user confirmed the sounds are audible but weird and inaccurate, and the root-cause pass found the same fidelity defect in all thirteen procedural recipes.
+**Decision:** Use compact, redistributable CC0 recordings for all thirteen non-speech effects while preserving gallop, speech, and microphone lifecycle contracts.
+**Consequences:** The static payload grows and listening remains a human acceptance step, but labels now map to purpose-recorded sources and the entire sibling class is fixed consistently.
+
 ## Journal
 
 ### 2026-09-20 — brady (human)
@@ -102,3 +108,9 @@ Phase 4 complete: root cause is proven and longstanding since `5ff1a0f`. Specifi
 
 ### 2026-09-20 — Codex
 Phase 5 checkpoint: recommend the root fix—replace all thirteen procedural effects with curated redistributable clips, preserve existing lifecycle/state contracts, and add asset integrity plus human listening acceptance. Revert would remove the whole product; relabeling would only hide the defect; retuning simple synthesis would remain unreliable for animal and vehicle sounds.
+
+### 2026-09-20 — Codex
+Phase 5 approved: the user said “Do it,” authorizing the complete asset-backed root fix and the requested merge/deployment to `main`.
+
+### 2026-09-20 — Codex
+Phase 6 complete: wrote the five-step bugfix plan with a test-only red commit, one asset-backed fix across all thirteen siblings, provenance documentation, a revert-check, and live production verification.
