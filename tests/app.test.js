@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AppController, getPadPresentation } from "../src/app.js";
+import { AppController, getPadPresentation, releaseOnPageHide } from "../src/app.js";
 import { sounds } from "../src/catalog.js";
 
 function createController() {
@@ -59,4 +59,22 @@ test("gallop presentation derives loop state from the engine", () => {
   assert.equal(getPadPresentation(gallop, { gallopMode: "off" }).state, "off");
   assert.equal(getPadPresentation(gallop, { gallopMode: "once" }).state, "once");
   assert.equal(getPadPresentation(gallop, { gallopMode: "loop" }).state, "looping");
+});
+
+test("pagehide releases reusable audio for bfcache and disposes final exits", async () => {
+  const calls = [];
+  const engine = {
+    release() {
+      calls.push("release");
+      return Promise.resolve();
+    },
+    dispose() {
+      calls.push("dispose");
+      return Promise.resolve();
+    },
+  };
+
+  await releaseOnPageHide(engine, { persisted: true });
+  await releaseOnPageHide(engine, { persisted: false });
+  assert.deepEqual(calls, ["release", "dispose"]);
 });

@@ -61,19 +61,17 @@ function createGallopBuffer(context) {
 
 function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuffer }) {
   const nodes = [];
-  const disconnectables = [];
   let stopped = false;
 
-  const track = (node, stoppable = true) => {
-    disconnectables.push(node);
-    if (stoppable) nodes.push(node);
+  const track = (node) => {
+    nodes.push(node);
     return node;
   };
 
   const finishWith = (node) => {
     node.onended = () => {
       if (!stopped) onEnded();
-      disconnectables.forEach((entry) => entry.disconnect?.());
+      nodes.forEach((entry) => entry.disconnect?.());
     };
   };
 
@@ -109,11 +107,11 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
 
   switch (id) {
     case "horse-whinny": {
-      const envelope = track(createEnvelope(context, destination, 1.75, 0.3, 0.06), false);
+      const envelope = track(createEnvelope(context, destination, 1.75, 0.3, 0.06));
       const lead = oscillator("sawtooth", 330, 1.75, envelope);
       lead.frequency.exponentialRampToValueAtTime(690, now + 0.42);
       lead.frequency.exponentialRampToValueAtTime(410, now + 1.7);
-      const depth = track(context.createGain(), false);
+      const depth = track(context.createGain());
       const tremolo = oscillator("sine", 17, 1.75, depth);
       tremolo.frequency.value = 17;
       depth.gain.value = 38;
@@ -122,13 +120,13 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "horse-snort": {
-      const envelope = track(createEnvelope(context, destination, 0.85, 0.5, 0.008), false);
+      const envelope = track(createEnvelope(context, destination, 0.85, 0.5, 0.008));
       primary = noise(0.85, envelope, "bandpass", 620);
       break;
     }
     case "gallop": {
       const source = track(context.createBufferSource());
-      const envelope = track(context.createGain(), false);
+      const envelope = track(context.createGain());
       envelope.gain.value = 0.72;
       source.buffer = gallopBuffer;
       source.loop = mode === "loop";
@@ -140,7 +138,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "clown-horn": {
-      const envelope = track(createEnvelope(context, destination, 0.58, 0.34, 0.01), false);
+      const envelope = track(createEnvelope(context, destination, 0.58, 0.34, 0.01));
       const lead = oscillator("square", 255, 0.58, envelope);
       lead.frequency.linearRampToValueAtTime(390, now + 0.12);
       lead.frequency.linearRampToValueAtTime(285, now + 0.52);
@@ -148,7 +146,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "sad-horn": {
-      const envelope = track(createEnvelope(context, destination, 1.25, 0.34, 0.04), false);
+      const envelope = track(createEnvelope(context, destination, 1.25, 0.34, 0.04));
       const lead = oscillator("sawtooth", 350, 1.25, envelope);
       lead.frequency.exponentialRampToValueAtTime(180, now + 1.18);
       primary = lead;
@@ -159,7 +157,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       const duration = id === "engine-rev" ? 1.35 : 1.8;
       const base = id === "engine-rev" ? 68 : 44;
       const top = id === "engine-rev" ? 230 : 155;
-      const envelope = track(createEnvelope(context, destination, duration, 0.32, 0.08), false);
+      const envelope = track(createEnvelope(context, destination, duration, 0.32, 0.08));
       const lead = oscillator("sawtooth", base, duration, envelope);
       lead.frequency.exponentialRampToValueAtTime(top, now + duration * 0.68);
       lead.frequency.exponentialRampToValueAtTime(base * 1.15, now + duration);
@@ -170,7 +168,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "burnout": {
-      const envelope = track(createEnvelope(context, destination, 1.9, 0.42, 0.04), false);
+      const envelope = track(createEnvelope(context, destination, 1.9, 0.42, 0.04));
       const tire = noise(1.9, envelope, "highpass", 900);
       const motor = oscillator("sawtooth", 92, 1.9, envelope);
       motor.frequency.exponentialRampToValueAtTime(245, now + 1.2);
@@ -178,7 +176,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "squeaky-toy": {
-      const envelope = track(createEnvelope(context, destination, 0.72, 0.28, 0.008), false);
+      const envelope = track(createEnvelope(context, destination, 0.72, 0.28, 0.008));
       const lead = oscillator("sine", 760, 0.72, envelope);
       lead.frequency.exponentialRampToValueAtTime(1380, now + 0.17);
       lead.frequency.exponentialRampToValueAtTime(690, now + 0.68);
@@ -189,7 +187,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
     case "cat-yowl": {
       const yowl = id === "cat-yowl";
       const duration = yowl ? 1.55 : 0.82;
-      const envelope = track(createEnvelope(context, destination, duration, yowl ? 0.32 : 0.25, 0.05), false);
+      const envelope = track(createEnvelope(context, destination, duration, yowl ? 0.32 : 0.25, 0.05));
       const lead = oscillator(yowl ? "sawtooth" : "triangle", yowl ? 430 : 610, duration, envelope);
       lead.frequency.exponentialRampToValueAtTime(yowl ? 720 : 890, now + duration * 0.36);
       lead.frequency.exponentialRampToValueAtTime(yowl ? 300 : 520, now + duration);
@@ -197,7 +195,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "circus": {
-      const envelope = track(createEnvelope(context, destination, 1.6, 0.26, 0.01), false);
+      const envelope = track(createEnvelope(context, destination, 1.6, 0.26, 0.01));
       const notes = [523.25, 659.25, 783.99, 659.25, 698.46, 587.33, 523.25];
       notes.forEach((frequency, index) => {
         const note = oscillator("square", frequency, 0.19, envelope, index * 0.205);
@@ -206,7 +204,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
       break;
     }
     case "rising-pad": {
-      const envelope = track(createEnvelope(context, destination, 2.4, 0.2, 0.45), false);
+      const envelope = track(createEnvelope(context, destination, 2.4, 0.2, 0.45));
       [110, 138.59, 164.81].forEach((frequency, index) => {
         const voice = oscillator(index === 1 ? "triangle" : "sine", frequency, 2.4, envelope);
         voice.frequency.exponentialRampToValueAtTime(frequency * 2, now + 2.25);
@@ -231,7 +229,7 @@ function createSynthEffect({ context, destination, id, mode, onEnded, gallopBuff
           // The node may already have stopped naturally.
         }
       });
-      disconnectables.forEach((node) => node.disconnect?.());
+      nodes.forEach((node) => node.disconnect?.());
     },
   };
 }
@@ -258,6 +256,8 @@ export class AudioEngine {
     this.active = new Map();
     this.listeners = new Set();
     this.gallopMode = "off";
+    this.gallopPendingMode = null;
+    this.gallopTransition = 0;
     this.microphoneState = "off";
     this.microphoneError = "";
     this.microphone = null;
@@ -320,7 +320,7 @@ export class AudioEngine {
   }
 
   startEffect(id, mode = "once") {
-    this.stop(id);
+    this.stopActive(id);
     const token = Symbol(id);
     const context = this.context;
     if (id === "gallop" && !this.gallopBuffer) {
@@ -337,6 +337,7 @@ export class AudioEngine {
         this.active.delete(id);
         if (id === "gallop") {
           this.gallopMode = "off";
+          this.gallopPendingMode = null;
           this.emit();
         }
       },
@@ -346,27 +347,43 @@ export class AudioEngine {
   }
 
   stop(id) {
+    this.stopActive(id);
+    if (id === "gallop") {
+      this.gallopTransition += 1;
+      this.gallopPendingMode = null;
+      if (this.gallopMode !== "off") {
+        this.gallopMode = "off";
+        this.emit();
+      }
+    }
+  }
+
+  stopActive(id) {
     const current = this.active.get(id);
     if (!current) return;
     this.active.delete(id);
     current.handle.stop?.();
-    if (id === "gallop" && this.gallopMode !== "off") {
-      this.gallopMode = "off";
-      this.emit();
-    }
   }
 
   async startGallop(mode) {
+    const transition = ++this.gallopTransition;
+    this.gallopPendingMode = mode;
     await this.ensureContext();
-    this.stop("gallop");
+    if (transition !== this.gallopTransition) return;
+    this.gallopPendingMode = null;
+    this.stopActive("gallop");
     this.gallopMode = mode;
     this.startEffect("gallop", mode);
     this.emit();
   }
 
   async toggleGallopLoop() {
-    if (this.gallopMode === "loop") {
-      this.stop("gallop");
+    if ((this.gallopPendingMode ?? this.gallopMode) === "loop") {
+      this.gallopTransition += 1;
+      this.gallopPendingMode = null;
+      this.stopActive("gallop");
+      this.gallopMode = "off";
+      this.emit();
       return;
     }
     await this.startGallop("loop");
@@ -378,7 +395,7 @@ export class AudioEngine {
     const Utterance = this.dependencies.SpeechSynthesisUtteranceClass;
     if (!synth || !Utterance) throw new Error("This browser does not support speech synthesis");
 
-    this.stop(id);
+    this.stop("speech");
     const utterance = new Utterance(text);
     utterance.rate = rate;
     utterance.pitch = pitch;
@@ -388,12 +405,12 @@ export class AudioEngine {
     if (englishVoice) utterance.voice = englishVoice;
     const token = Symbol(id);
     const finish = () => {
-      if (this.active.get(id)?.token === token) this.active.delete(id);
+      if (this.active.get("speech")?.token === token) this.active.delete("speech");
     };
     utterance.onend = finish;
     utterance.onerror = finish;
     const handle = { stop: () => synth.cancel() };
-    this.active.set(id, { handle, token });
+    this.active.set("speech", { handle, token });
     synth.speak(utterance);
   }
 
@@ -456,13 +473,20 @@ export class AudioEngine {
     this.emit();
   }
 
-  async dispose() {
-    if (this.disposed) return;
-    this.disposed = true;
+  async release() {
     this.stopMicrophone();
     for (const id of [...this.active.keys()]) this.stop(id);
-    this.dependencies.speechSynthesis?.cancel?.();
-    await this.context?.close?.();
+    const context = this.context;
+    this.context = null;
+    this.output = null;
+    this.gallopBuffer = null;
+    await context?.close?.();
+  }
+
+  async dispose() {
+    if (this.disposed) return;
+    await this.release();
+    this.disposed = true;
     this.listeners.clear();
   }
 }

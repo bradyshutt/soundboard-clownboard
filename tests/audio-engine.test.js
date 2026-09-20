@@ -77,12 +77,24 @@ function createHarness(overrides = {}) {
     handles.push(handle);
     return handle;
   };
-  const speechSynthesis = { cancelCount: 0, cancel() { this.cancelCount += 1; } };
+  const speechSynthesis = {
+    cancelCount: 0,
+    spoken: [],
+    cancel() { this.cancelCount += 1; },
+    getVoices() { return []; },
+    speak(utterance) { this.spoken.push(utterance); },
+  };
+  class FakeUtterance {
+    constructor(text) {
+      this.text = text;
+    }
+  }
   const engine = new AudioEngine({
     AudioContextClass: FakeAudioContext,
     effectFactory,
     gallopBufferFactory: () => ({ duration: 30 }),
     speechSynthesis,
+    SpeechSynthesisUtteranceClass: FakeUtterance,
     ...overrides,
   });
   return { engine, handles, speechSynthesis };
@@ -121,6 +133,37 @@ test("gallop one-shot and loop modes share one deterministic state machine", asy
 
   handles[3].end();
   assert.equal(engine.gallopMode, "off");
+});
+
+test("a rapid first-use loop double tap resolves to off", async () => {
+  let releaseResume;
+  const resume = new Promise((resolve) => { releaseResume = resolve; });
+  class PendingAudioContext extends FakeAudioContext {
+    async resume() {
+      this.resumeCount += 1;
+      await resume;
+      this.state = "running";
+    }
+  }
+  const { engine, handles } = createHarness({ AudioContextClass: PendingAudioContext });
+
+  const firstTap = engine.toggleGallopLoop();
+  const secondTap = engine.toggleGallopLoop();
+  releaseResume();
+  await Promise.all([firstTap, secondTap]);
+
+  assert.equal(engine.gallopMode, "off");
+  assert.equal(handles.length, 0);
+});
+
+test("spoken lines use one explicit global speech channel", async () => {
+  const { engine, speechSynthesis } = createHarness();
+  await engine.play("howdy-partner");
+  await engine.play("yee-haw");
+
+  assert.equal(speechSynthesis.cancelCount, 1);
+  assert.deepEqual(speechSynthesis.spoken.map(({ text }) => text), ["Howdy, partner!", "Yee-haw!"]);
+  assert.deepEqual([...engine.active.keys()], ["speech"]);
 });
 
 test("microphone permission failures become visible state and can be retried", async () => {
@@ -176,6 +219,7 @@ test("dispose stops effects, microphone tracks, speech, and the audio context", 
   await engine.play("engine-rev");
   await engine.toggleGallopLoop();
   await engine.toggleMicrophone();
+  await engine.play("yee-haw");
 
   await engine.dispose();
   assert.equal(handles.every(({ stopped }) => stopped), true);

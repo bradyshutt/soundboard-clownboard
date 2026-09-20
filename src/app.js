@@ -60,6 +60,10 @@ export class AppController {
   }
 }
 
+export function releaseOnPageHide(engine, event) {
+  return event.persisted ? engine.release() : engine.dispose();
+}
+
 function createTextElement(documentRef, className, text) {
   const element = documentRef.createElement("span");
   element.className = className;
@@ -223,9 +227,14 @@ export function mountApp(documentRef = document, windowRef = window) {
 
   const dispose = () => {
     unsubscribe();
-    engine.dispose();
+    windowRef.removeEventListener("pagehide", handlePageHide);
+    return engine.dispose();
   };
-  windowRef.addEventListener("pagehide", dispose, { once: true });
+  const handlePageHide = (event) => {
+    if (!event.persisted) unsubscribe();
+    releaseOnPageHide(engine, event).catch(handleError);
+  };
+  windowRef.addEventListener("pagehide", handlePageHide);
   render();
 
   return { controller, engine, dispose, render };
