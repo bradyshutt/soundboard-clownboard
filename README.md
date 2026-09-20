@@ -4,6 +4,9 @@ A phone-first soundboard with sixteen effects, a fixed 3×4 paginated layout, a 
 30-second gallop, and optional live microphone monitoring. Everything runs locally in the browser:
 there are no audio downloads, trackers, accounts, or build-time dependencies.
 
+Synthesized effects can overlap. The two spoken phrases share the browser's device-speech channel,
+so starting either phrase replaces the one currently speaking.
+
 ## Run locally
 
 Serve the repository root from any static HTTP server, then open it in a modern browser. For
