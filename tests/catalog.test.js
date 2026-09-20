@@ -1,0 +1,53 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { PAGE_SIZE, clampPage, getPage, pageCount, sounds } from "../src/catalog.js";
+
+test("catalog contains the sixteen stable first-release pads", () => {
+  assert.equal(sounds.length, 16);
+  assert.deepEqual(
+    sounds.map(({ id }) => id),
+    [
+      "horse-whinny",
+      "horse-snort",
+      "gallop",
+      "clown-horn",
+      "sad-horn",
+      "engine-rev",
+      "muscle-rev",
+      "burnout",
+      "squeaky-toy",
+      "kitten-meow",
+      "cat-yowl",
+      "circus",
+      "rising-pad",
+      "yee-haw",
+      "howdy-partner",
+      "microphone",
+    ],
+  );
+  assert.equal(new Set(sounds.map(({ id }) => id)).size, sounds.length);
+});
+
+test("catalog capabilities identify the long-running controls", () => {
+  assert.equal(sounds.find(({ id }) => id === "gallop").canLoop, true);
+  assert.equal(sounds.find(({ id }) => id === "microphone").kind, "microphone");
+  assert.equal(sounds.filter(({ kind }) => kind === "speech").length, 2);
+});
+
+test("pages always contain twelve slots and page two has eight placeholders", () => {
+  assert.equal(PAGE_SIZE, 12);
+  assert.equal(pageCount, 2);
+  assert.equal(getPage(0).length, 12);
+  assert.equal(getPage(1).length, 12);
+  assert.equal(getPage(1).filter(({ disabled }) => disabled).length, 8);
+});
+
+test("page navigation clamps to available boundaries", () => {
+  assert.equal(clampPage(-8), 0);
+  assert.equal(clampPage(0), 0);
+  assert.equal(clampPage(1), 1);
+  assert.equal(clampPage(99), 1);
+  assert.equal(clampPage(Number.NaN), 0);
+  assert.equal(getPage(99)[0].id, "rising-pad");
+});
