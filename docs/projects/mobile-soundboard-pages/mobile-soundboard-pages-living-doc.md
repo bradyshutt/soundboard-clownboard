@@ -16,12 +16,12 @@ updated: 2026-09-20
 **TL;DR:** Build a mobile-first, install-free soundboard as a static GitHub Pages site. The app will show a 3×4 paginated grid, synthesize its sounds locally for immediate playback, and provide a microphone-monitor toggle for live projection.
 
 **Current state:**
-- brady-bot: phase 5/15 · config: quick · repo: personal
-- Repository research, first-release scope, and the four-step implementation plan are complete.
-- The plan's quick correctness-and-coverage review is in progress.
+- brady-bot: phase 6/15 · config: quick · repo: personal
+- Repository research, first-release scope, and the reviewed four-step implementation plan are complete.
+- Both plan-review objections were fixed in the plan; implementation awaits Brady's sign-off.
 
 **Next actions:**
-- [ ] Write and adversarially review the implementation plan.
+- [x] Write and adversarially review the implementation plan.
 - [ ] Implement, verify, review, and deploy after the plan gate.
 
 ## Context
@@ -74,6 +74,11 @@ First-release scope excludes recording, uploaded assets, persistence, service wo
 **Decision:** The microphone pad toggles one stream routed through a conservative gain, displays requesting/live/error states, advises headphones, and stops all tracks when turned off or when the page exits.
 **Consequences:** Monitoring persists across soundboard pages until explicitly disabled; users remain responsible for granting permission and avoiding acoustic feedback.
 
+### 2026-09-20 — Deploy the feature branch with a temporary exact-branch trigger
+**Context:** GitHub will not manually dispatch a newly added workflow until that workflow exists on the default branch, but this run must produce a live Pages site while leaving a draft PR.
+**Decision:** Temporarily allow the Pages workflow to run on pushes to this exact feature branch, deploy and smoke-test the final app, then remove that branch trigger so the reviewed workflow retains only `main` and `workflow_dispatch`.
+**Consequences:** The pre-merge deployment is possible without mutating `main`; the final workflow remains reusable and does not publish arbitrary branches.
+
 ## Journal
 
 ### 2026-09-20 — brady (human)
@@ -96,3 +101,6 @@ Phase 4 complete: settled the first-release scope around a no-build static app, 
 
 ### 2026-09-20 — Codex
 Phase 5 complete: wrote the four-step default-style implementation plan covering the static shell, audio engine, mobile interactions, and Pages rollout.
+
+### 2026-09-20 — Codex
+Phase 6 complete: the single-lens plan review found two actionable gaps; revised the rollout trigger and gallop state machine, leaving no open plan findings.
