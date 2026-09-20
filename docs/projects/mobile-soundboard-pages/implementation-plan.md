@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved by plan review — the quick correctness-and-coverage objections are resolved; awaiting Brady's implementation sign-off.
+Approved by plan review and Brady for implementation, merge to `main`, and production deployment.
 
 Progress: [ ] step 1 [ ] step 2 [ ] step 3 [ ] step 4
 
