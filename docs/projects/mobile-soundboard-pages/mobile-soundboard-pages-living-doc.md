@@ -16,7 +16,7 @@ updated: 2026-09-20
 **TL;DR:** Build a mobile-first, install-free soundboard as a static GitHub Pages site. The app will show a 3×4 paginated grid, synthesize its sounds locally for immediate playback, and provide a microphone-monitor toggle for live projection.
 
 **Current state:**
-- brady-bot: phase 7/15 · config: quick merge · repo: personal
+- brady-bot: phase 9/15 · config: quick merge · repo: personal
 - All four implementation steps are complete; the feature-branch Pages preview passed its HTTPS mobile smoke test.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
@@ -142,3 +142,9 @@ Brady authorized public visibility. The repository is public and Pages is enable
 
 ### 2026-09-20 — Codex
 Phase 7 complete: the feature branch is live on Pages and passed an HTTPS phone-viewport smoke test covering all playback pads, pagination, gallop looping, and microphone live/off behavior with no browser exceptions.
+
+### 2026-09-20 — Codex
+Phase 8 complete: opened draft PR #1 against `main` with the provisional review guide; self-review requests are unavailable, so Brady is attached as assignee.
+
+### 2026-09-20 — Codex
+Phase 9 skipped under the `quick` configuration; acceptance coverage remains tracked by the implementation plan and Phase 10 review.
