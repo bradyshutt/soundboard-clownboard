@@ -1,6 +1,6 @@
 ---
 feature: mobile-soundboard-pages
-status: draft
+status: complete
 owner: @brady
 updated: 2026-09-20
 ---
@@ -16,17 +16,17 @@ updated: 2026-09-20
 **TL;DR:** Build a mobile-first, install-free soundboard as a static GitHub Pages site. The app will show a 3×4 paginated grid, synthesize its sounds locally for immediate playback, and provide a microphone-monitor toggle for live projection.
 
 **Current state:**
-- brady-bot: phase 13/15 · config: quick merge · repo: personal
+- brady-bot: phase 15/15 · config: quick merge · repo: personal
 - All four implementation steps are complete; the feature-branch Pages preview passed its HTTPS mobile smoke test.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
 - Brady authorized public visibility after private Pages eligibility failed; Pages is enabled and serving the reviewed feature branch preview.
-- The quick review fixes are live and reverified, Pages checks are green, and PR #1 is ready to merge; CI enforcement remains a tracked follow-up.
+- PR #1 is squash-merged to `main` as `1176a9f`; Pages serves `main`, its deployment checks are green, and the production mobile smoke test passed. Test-CI enforcement remains a tracked follow-up.
 
 **Next actions:**
 - [x] Write and adversarially review the implementation plan.
 - [x] Implement and verify the reviewed plan.
-- [ ] Review, merge, repoint Pages to `main`, and verify production.
+- [x] Review, merge, repoint Pages to `main`, and verify production.
 
 ## Context
 
@@ -92,6 +92,13 @@ First-release scope excludes recording, uploaded assets, persistence, service wo
 **Context:** The Web Speech API exposes one global queue and `cancel()` stops every current and pending utterance, so it cannot provide independently stoppable speech effects.
 **Decision:** Synthesized effects may overlap, while starting either spoken phrase replaces any currently speaking phrase. The speech delivery remains generic and does not imitate a named performer.
 **Consequences:** Speech behavior is deterministic and matches the browser contract; the two spoken pads do not overlap one another.
+
+## Prevention retro
+
+- **Mechanical — browser restoration:** The implementation plan named `pagehide` teardown but did not name bfcache restoration. The earliest catch point was Step 3's lifecycle test design; the suite now locks in reusable release for persisted exits and permanent disposal for final exits.
+- **Mechanical — asynchronous toggles:** Plan review required repeated gallop transitions, but the initial tests exercised them sequentially. The earliest catch point was Step 2's state-machine test matrix; a concurrent first-use double-tap regression now covers the pending `AudioContext.resume()` boundary.
+- **Durable contract — device speech:** Research should have checked whether Web Speech supports per-utterance cancellation before promising different-sound overlap. The living doc and engine tests now state the durable global-channel rule: spoken phrases replace one another.
+- **Process follow-up — delivery credentials:** Check `workflow` scope before choosing an Actions-based deployment plan. When a workflow-scoped credential is available, add required `npm test` and `npm run check` CI so future `main` changes cannot publish without mechanical verification.
 
 ## Journal
 
@@ -169,3 +176,12 @@ Phase 12 complete: GitHub's Pages build, deploy, and build-status checks are gre
 
 ### 2026-09-20 — Codex
 Phase 13 complete: wrote the reviewer guide and finalized PR #1's description with decisions, verification, residual risk, and production deployment steps.
+
+### 2026-09-20 — Codex
+Phase 13.5 complete: squash-merged PR #1 into `main` as `1176a9f`, repointed branch-source Pages to `main`, and confirmed the Pages build/deploy checks succeeded for that merge commit.
+
+### 2026-09-20 — Codex
+Phase 14 complete: production is live over HTTPS and passed the final phone-viewport smoke test with all effects, pagination, rapid gallop toggling, microphone live/off, and zero browser exceptions; CI enforcement remains the only deferred follow-up.
+
+### 2026-09-20 — Codex
+Phase 15 complete: prevention retro moved bfcache and asynchronous-toggle failures into regression tests, documented the global speech contract, and identified workflow credential validation as the earliest catch point for the deferred CI gate.

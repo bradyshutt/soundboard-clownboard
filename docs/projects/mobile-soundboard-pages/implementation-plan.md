@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved by plan review and Brady for implementation, merge to `main`, and production deployment.
+Complete — implemented, reviewed, squash-merged to `main`, and verified on production GitHub Pages.
 
 Progress: [x] step 1 [x] step 2 [x] step 3 [x] step 4
 
@@ -58,3 +58,4 @@ The HTML/CSS shell will fit twelve touch targets plus navigation inside the dyna
 - 2026-09-20: defined a single gallop state machine and replaced the impossible pre-merge manual dispatch with a temporary branch-scoped push trigger after plan review
 - 2026-09-20: replaced Actions deployment with Pages branch-source publishing after the cloud credential rejected workflow-file pushes; production still publishes only `main`
 - 2026-09-20: clarified the browser's single global speech channel and reusable page-release lifecycle after the quick review
+- 2026-09-20: PR #1 squash-merged as `1176a9f`; Pages repointed to `main` and production smoke-tested
