@@ -25,6 +25,5 @@ npm run check
 
 ## Deploy
 
-GitHub Actions tests the source, stages only the runtime HTML, CSS, and JavaScript, and deploys the
-artifact to GitHub Pages. Production deploys from `main`; manual dispatch is also available after
-the workflow exists on the default branch.
+GitHub Pages serves the repository root from `main`. Run the verification commands before merging;
+the Pages branch source automatically republishes the static files after `main` changes.
