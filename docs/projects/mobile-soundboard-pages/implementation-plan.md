@@ -10,7 +10,7 @@ Progress: [x] step 1 [x] step 2 [x] step 3 [ ] step 4
 
 Build a no-build static web app with clear seams between the declarative catalog (`src/catalog.js`), browser audio ownership (`src/audio-engine.js`), and DOM/page state (`src/app.js`). The decisions and tradeoffs are recorded in the [living doc](./mobile-soundboard-pages-living-doc.md#decision-log). Keep browser-specific dependencies injectable or behind narrow methods so Node's built-in test runner can cover paging, catalog integrity, source replacement, microphone teardown, and gallop-loop state without adding a package dependency.
 
-The HTML/CSS shell will fit twelve touch targets plus navigation inside the dynamic mobile viewport and safe areas. The Pages workflow will test the same source tree, upload it without a build transform, and support both automatic `main` deployments and a one-time manual deployment of this feature branch.
+The HTML/CSS shell will fit twelve touch targets plus navigation inside the dynamic mobile viewport and safe areas. GitHub Pages will serve the no-build source tree directly, using the feature branch for the pre-merge smoke test and `main` for production after merge.
 
 ## Steps
 
@@ -37,9 +37,9 @@ The HTML/CSS shell will fit twelve touch targets plus navigation inside the dyna
    - Verify: `npm test`, `npm run check`, then serve locally and inspect portrait and landscape phone viewports; exercise every pad, page navigation, loop start/stop, microphone denial, microphone live/off, and repeated taps in a real browser.
 
 4. **Add and exercise the GitHub Pages delivery path.**
-   - Add `.github/workflows/deploy-pages.yml` and `README.md`.
-   - Run tests and syntax checks in the workflow, configure Pages, upload only runtime files as the static artifact, and deploy through the `github-pages` environment. Start with a temporary push trigger restricted to `main` and this exact feature branch because a new workflow cannot be manually dispatched until it exists on the default branch.
-   - Enable Pages with workflow publishing, push the feature branch to deploy it, wait for the deployment to succeed, and smoke-test the public project URL on a phone-sized viewport. After the final code/review fix is live, remove the temporary feature-branch trigger so the committed workflow deploys only `main` (plus manual dispatch once available there).
+   - Add `README.md` with local verification, microphone-safety, and deployment guidance.
+   - Run tests and syntax checks locally, enable branch-source Pages, and temporarily point it at this exact feature branch for the pre-merge deployment.
+   - Wait for the deployment to succeed and smoke-test the public project URL on a phone-sized viewport. After the final code/review fix is live and the PR is merged, repoint Pages to `main` and verify the production deployment reflects the merge commit.
    - If the private repository's account plan rejects Pages, stop before changing repository visibility; making source public requires explicit authorization.
    - Verify: local gates, workflow status, Pages API status, live URL load, asset load, tap playback, and microphone prompt over HTTPS.
 
@@ -56,3 +56,4 @@ The HTML/CSS shell will fit twelve touch targets plus navigation inside the dyna
 
 - 2026-09-20: initial plan
 - 2026-09-20: defined a single gallop state machine and replaced the impossible pre-merge manual dispatch with a temporary branch-scoped push trigger after plan review
+- 2026-09-20: replaced Actions deployment with Pages branch-source publishing after the cloud credential rejected workflow-file pushes; production still publishes only `main`

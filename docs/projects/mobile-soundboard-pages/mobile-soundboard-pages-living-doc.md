@@ -20,7 +20,7 @@ updated: 2026-09-20
 - Repository research, first-release scope, and the reviewed four-step implementation plan are complete.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
-- GitHub rejected Pages enablement for the private repository because the current account plan is ineligible; no visibility change was made.
+- Brady authorized public visibility after private Pages eligibility failed; Pages is enabled and the feature-branch preview deployment is next.
 
 **Next actions:**
 - [x] Write and adversarially review the implementation plan.
@@ -45,7 +45,7 @@ The repository currently contains only an initial placeholder commit. GitHub Pag
 
 Build a no-framework, no-build static site from semantic HTML, mobile-first CSS, and native ES modules. A declarative sound catalog supplies labels, visual metadata, and playback identifiers; a small audio engine owns the shared `AudioContext`, procedural Web Audio effects, speech synthesis, active-source cleanup, the 30-second gallop buffer, and microphone-stream lifecycle. Pure catalog and paging behavior will use Node's built-in test runner, while the browser surface will receive an automated smoke check plus real-browser mobile visual and interaction verification.
 
-The viewport uses `100dvh` with safe-area padding: twelve fixed grid slots occupy the available space above a compact navigation bar. The first page contains twelve sounds; the second contains the remaining four plus eight disabled “More sounds soon” pads. GitHub Actions will upload the static root as a Pages artifact on `main`, with `workflow_dispatch` allowing the feature branch to be deployed before merge.
+The viewport uses `100dvh` with safe-area padding: twelve fixed grid slots occupy the available space above a compact navigation bar. The first page contains twelve sounds; the second contains the remaining four plus eight disabled “More sounds soon” pads. GitHub Pages will serve the static root from the feature branch for pre-merge verification, then from `main` after merge.
 
 First-release scope excludes recording, uploaded assets, persistence, service workers/installability, custom domains, volume controls, and impersonation of a named character or performer.
 
@@ -80,6 +80,11 @@ First-release scope excludes recording, uploaded assets, persistence, service wo
 **Context:** GitHub will not manually dispatch a newly added workflow until that workflow exists on the default branch, but this run must produce a live Pages site while leaving a draft PR.
 **Decision:** Temporarily allow the Pages workflow to run on pushes to this exact feature branch, deploy and smoke-test the final app, then remove that branch trigger so the reviewed workflow retains only `main` and `workflow_dispatch`.
 **Consequences:** The pre-merge deployment is possible without mutating `main`; the final workflow remains reusable and does not publish arbitrary branches.
+
+### 2026-09-20 — Use Pages branch-source deployment
+**Context:** The cloud GitHub credential can push repository content but lacks the classic PAT `workflow` scope required to add an Actions workflow.
+**Decision:** Supersede the temporary Actions trigger with branch-source Pages: deploy the feature branch for preview, then point Pages at `main` after the approved merge.
+**Consequences:** Deployment has no CI workflow, so local gates and live smoke tests carry verification; production maps directly to the contents of `main` as requested.
 
 ## Journal
 
@@ -130,3 +135,6 @@ Phase 7 step 3 complete: wired accessible mobile controls and state announcement
 
 ### 2026-09-20 — Codex
 Phase 7 step 4 paused before push: the Pages workflow and README are committed locally, but GitHub returned HTTP 422 because the current plan does not support Pages for this private repository; repository visibility remains private pending Brady's decision.
+
+### 2026-09-20 — Codex
+Brady authorized public visibility. The repository is public and Pages is enabled; after GitHub rejected workflow-file pushes for missing credential scope, deployment switched to reversible branch-source publishing with production still targeting `main`.
