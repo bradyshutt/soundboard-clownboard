@@ -17,14 +17,15 @@ updated: 2026-09-20
 
 **Current state:**
 - brady-bot: phase 7/15 · config: quick merge · repo: personal
-- Repository research, first-release scope, and the reviewed four-step implementation plan are complete.
+- All four implementation steps are complete; the feature-branch Pages preview passed its HTTPS mobile smoke test.
 - Both plan-review objections were fixed in the plan, and Brady approved implementation through merge and production deployment.
 - The cloud workspace is active and reconciled with the transferred branch; the earlier repository-access blocker is resolved.
 - Brady authorized public visibility after private Pages eligibility failed; Pages is enabled and the feature-branch preview deployment is next.
 
 **Next actions:**
 - [x] Write and adversarially review the implementation plan.
-- [ ] Implement, verify, review, and deploy after the plan gate.
+- [x] Implement and verify the reviewed plan.
+- [ ] Review, merge, repoint Pages to `main`, and verify production.
 
 ## Context
 
@@ -138,3 +139,6 @@ Phase 7 step 4 paused before push: the Pages workflow and README are committed l
 
 ### 2026-09-20 — Codex
 Brady authorized public visibility. The repository is public and Pages is enabled; after GitHub rejected workflow-file pushes for missing credential scope, deployment switched to reversible branch-source publishing with production still targeting `main`.
+
+### 2026-09-20 — Codex
+Phase 7 complete: the feature branch is live on Pages and passed an HTTPS phone-viewport smoke test covering all playback pads, pagination, gallop looping, and microphone live/off behavior with no browser exceptions.
