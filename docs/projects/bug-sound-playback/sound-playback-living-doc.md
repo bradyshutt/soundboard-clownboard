@@ -20,13 +20,14 @@ updated: 2026-09-20
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 4/16 · config: baseline`
+- `brady-bot-bug: phase 5/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
-- Root-cause confidence: pending root-cause pass
+- Root-cause confidence: proven
 
 **Next actions:**
-- [ ] Trace the root cause and present fix options.
+- [ ] Confirm the recommended asset-backed root fix.
+- [ ] Write and review the regression-first implementation plan.
 
 ---
 
@@ -58,12 +59,12 @@ The phone-first GitHub Pages soundboard was deployed from `main` at https://brad
 
 ## Approach
 
-Reproduce at the browser-audio boundary, then choose the narrowest fix that corrects the demonstrated mechanism. Verify the exact production path after deployment rather than treating exception-free clicks as proof of sound.
+Replace the acoustically generic recipes with curated, redistributable recordings while retaining the engine's current stoppable-handle boundary, overlap rules, 30-second gallop state machine, speech behavior, and microphone teardown. Add catalog/file-integrity tests and require a named listening pass because amplitude-only automation cannot prove semantic fidelity.
 
 ## Open questions
 
 - [x] Does “not working” mean silent playback, incorrect/unrecognizable playback, or both? Incorrect and unrecognizable playback.
-- [ ] Should every named procedural effect move to a curated recording, or only real-world effects while musical stings remain synthesized?
+- [ ] Should every named procedural effect move to a curated recording, or only real-world effects while musical stings remain synthesized? Recommendation: replace all thirteen so the acceptance rule is consistent.
 
 ---
 
@@ -95,3 +96,9 @@ Phase 3 stopped at the reproduction gate: an instrumented run against production
 
 ### 2026-09-20 — Codex
 Phase 3 resumed and completed after the user clarified that playback is audible but weird and inaccurate. A catalog assertion requiring purpose-recorded assets failed because all 13 named effects currently have no asset source; source inspection confirms they are implemented with generic oscillator/noise recipes.
+
+### 2026-09-20 — Codex
+Phase 4 complete: root cause is proven and longstanding since `5ff1a0f`. Specific real-world labels were implemented as minimal oscillator/noise gestures, the real recipe was mocked out in tests, and physical-device sound fidelity was explicitly left outside the original acceptance pass. All thirteen procedural effects are reachable sibling instances.
+
+### 2026-09-20 — Codex
+Phase 5 checkpoint: recommend the root fix—replace all thirteen procedural effects with curated redistributable clips, preserve existing lifecycle/state contracts, and add asset integrity plus human listening acceptance. Revert would remove the whole product; relabeling would only hide the defect; retuning simple synthesis would remain unreliable for animal and vehicle sounds.
