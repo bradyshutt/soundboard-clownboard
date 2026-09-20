@@ -17,17 +17,15 @@ updated: 2026-09-20
 
 ## Status
 
-**TL;DR:** Production users report that almost none of the soundboard sounds work. The deployed JavaScript matches `main`; an instrumented mobile-Chrome run measured output from every synthesized pad, so the reported device/browser and meaning of “not working” are required to reproduce the failure.
+**TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 3/16 · config: baseline`
+- `brady-bot-bug: phase 4/16 · config: baseline`
 - Verdict: `actionable` · severity P2
-- Reproduction: not established; production mobile Chrome emits measurable output for all 13 Web Audio pads and dispatches both speech phrases
-- Root-cause confidence: pending
+- Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
+- Root-cause confidence: pending root-cause pass
 
 **Next actions:**
-- [ ] Obtain the reporting device/browser and whether affected pads are silent or merely incorrect.
-- [ ] Reproduce the reported playback failure with an audio-output assertion.
 - [ ] Trace the root cause and present fix options.
 
 ---
@@ -64,8 +62,8 @@ Reproduce at the browser-audio boundary, then choose the narrowest fix that corr
 
 ## Open questions
 
-- [ ] Which reporting device/browser and which pads distinguish working from non-working?
-- [ ] Does “not working” mean silent playback, incorrect/unrecognizable playback, or both?
+- [x] Does “not working” mean silent playback, incorrect/unrecognizable playback, or both? Incorrect and unrecognizable playback.
+- [ ] Should every named procedural effect move to a curated recording, or only real-world effects while musical stings remain synthesized?
 
 ---
 
@@ -94,3 +92,6 @@ Phase 2 complete: created this tracking document and framed success as restoring
 
 ### 2026-09-20 — Codex
 Phase 3 stopped at the reproduction gate: an instrumented run against production on mobile Chrome measured non-zero peaks for all 13 Web Audio effects (0.176–0.688), observed both speech calls, and saw a running audio context. The user-reported failure remains unreproduced without the affected device/browser and clarification of silent versus incorrect output.
+
+### 2026-09-20 — Codex
+Phase 3 resumed and completed after the user clarified that playback is audible but weird and inaccurate. A catalog assertion requiring purpose-recorded assets failed because all 13 named effects currently have no asset source; source inspection confirms they are implemented with generic oscillator/noise recipes.
