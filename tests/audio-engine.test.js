@@ -128,6 +128,32 @@ test("starts the exact recording synchronously and preserves per-effect overlap"
   assert.deepEqual(engine.getState().activeSoundIds.sort(), ["clown-horn", "engine-rev"]);
 });
 
+test("recorded effects replay their attack after a Bluetooth output warm-up", async () => {
+  let warmup;
+  const AudioClass = createAudioClass();
+  const { engine } = createHarness({
+    AudioClass,
+    clearTimeoutFn() {},
+    setTimeoutFn(callback, delay) {
+      warmup = { callback, delay };
+      return 1;
+    },
+  });
+
+  const started = engine.play("clown-horn", "assets/audio/clown-horn.mp3", 0.75);
+  const media = AudioClass.instances[0];
+  assert.equal(media.playCount, 1);
+  assert.equal(media.volume, 0.001);
+  await Promise.resolve();
+  assert.equal(warmup.delay, 250);
+
+  media.currentTime = 0.22;
+  warmup.callback();
+  await started;
+  assert.equal(media.currentTime, 0);
+  assert.equal(media.volume, 0.75);
+});
+
 test("recorded effects start while microphone Web Audio startup is still pending", async () => {
   let releaseResume;
   const resume = new Promise((resolve) => { releaseResume = resolve; });
