@@ -2,6 +2,8 @@ import { AudioEngine } from "./audio-engine.js";
 import { clampPage, getPage, pageCount } from "./catalog.js";
 
 export function getPadPresentation(entry, engineState) {
+  const isPlaying = engineState.activeSoundIds?.includes(entry.id) ?? false;
+
   if (entry.kind === "microphone") {
     const state = engineState.microphoneState;
     const labels = {
@@ -20,14 +22,24 @@ export function getPadPresentation(entry, engineState) {
   }
 
   if (entry.id === "gallop") {
+    if (isPlaying) {
+      const looping = engineState.gallopMode === "loop";
+      return {
+        ariaLabel: "Stop gallop",
+        state: looping ? "looping" : "playing",
+        hint: looping ? "Looping · tap to stop" : "Playing · tap to stop",
+      };
+    }
     return {
       ariaLabel: "Play one 30-second gallop",
-      state: engineState.gallopMode === "loop" ? "looping" : engineState.gallopMode,
-      hint: engineState.gallopMode === "once" ? "Playing once" : "Tap for one run",
+      state: "off",
+      hint: "Tap for one run",
     };
   }
 
-  return { ariaLabel: `Play ${entry.label}`, state: "off", hint: "" };
+  return isPlaying
+    ? { ariaLabel: `${entry.label} is playing. Tap to play again.`, state: "playing", hint: "Playing" }
+    : { ariaLabel: `Play ${entry.label}`, state: "off", hint: "" };
 }
 
 export class AppController {
@@ -101,24 +113,17 @@ export function mountApp(documentRef = document, windowRef = window) {
   };
 
   const syncEngineState = () => {
-    const microphone = grid.querySelector('[data-sound-id="microphone"]');
-    if (microphone) {
-      const entry = getPage(controller.page).find(({ id }) => id === "microphone");
+    const entries = getPage(controller.page);
+    grid.querySelectorAll(".sound-pad").forEach((button) => {
+      const entry = entries.find(({ id }) => id === button.dataset.soundId);
+      if (!entry) return;
       const presentation = getPadPresentation(entry, engineState);
-      microphone.dataset.state = presentation.state;
-      microphone.setAttribute("aria-label", presentation.ariaLabel);
-      microphone.querySelector(".pad-hint").textContent = presentation.hint;
-    }
+      button.dataset.state = presentation.state;
+      button.setAttribute("aria-label", presentation.ariaLabel);
+      button.querySelector(".pad-hint").textContent = presentation.hint;
+    });
 
-    const gallop = grid.querySelector('[data-sound-id="gallop"]');
     const loop = grid.querySelector(".loop-button");
-    if (gallop) {
-      const entry = getPage(controller.page).find(({ id }) => id === "gallop");
-      const presentation = getPadPresentation(entry, engineState);
-      gallop.dataset.state = presentation.state;
-      gallop.setAttribute("aria-label", presentation.ariaLabel);
-      gallop.querySelector(".pad-hint").textContent = presentation.hint;
-    }
     if (loop) {
       const looping = engineState.gallopMode === "loop";
       loop.setAttribute("aria-pressed", String(looping));
@@ -152,7 +157,9 @@ export function mountApp(documentRef = document, windowRef = window) {
     button.addEventListener("click", () => {
       pulsePad(button);
       controller.activate(entry).then(() => {
-        if (entry.kind !== "microphone") announce(`${entry.label} playing.`);
+        if (entry.kind === "microphone") return;
+        const gallopStopped = entry.id === "gallop" && !engineState.activeSoundIds.includes("gallop");
+        announce(gallopStopped ? `${entry.label} stopped.` : `${entry.label} playing.`);
       }).catch(handleError);
     });
     cell.append(button);
