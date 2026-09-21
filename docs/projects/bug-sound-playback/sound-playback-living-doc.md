@@ -2,7 +2,7 @@
 feature: sound-playback
 status: in-progress
 owner: @brady
-updated: 2026-09-20
+updated: 2026-09-21
 ---
 
 <!-- AGENT INSTRUCTIONS — read before editing
@@ -20,7 +20,7 @@ updated: 2026-09-20
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 7/16 · config: baseline`
+- `brady-bot-bug: phase 8/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
 - Root-cause confidence: proven
@@ -28,7 +28,8 @@ updated: 2026-09-20
 **Next actions:**
 - [x] Confirm the recommended asset-backed root fix.
 - [x] Review the regression-first implementation plan.
-- [ ] Implement red-to-green in incremental commits.
+- [ ] Make the committed recording regression test green.
+- [ ] Complete fix verification and reviews.
 
 ---
 
@@ -117,3 +118,6 @@ Phase 6 complete: wrote the five-step bugfix plan with a test-only red commit, o
 
 ### 2026-09-20 — Codex
 Phase 7 review complete: five objections were fixed in the plan—catalog-to-engine source wiring, exact gallop timing and stale-deadline tests, synchronous gesture-safe playback, an executed semantic listening matrix, and an isolated-worktree revert-check. Convention fit found no objections.
+
+### 2026-09-21 — Codex
+Phase 7 approved by the user. Phase 8 step 1 complete: committed the asset-coverage reproduction test alone and observed the expected failure, `horse-whinny must declare a bundled recording`.

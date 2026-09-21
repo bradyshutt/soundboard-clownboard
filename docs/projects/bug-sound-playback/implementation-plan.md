@@ -2,9 +2,9 @@
 
 ## Status
 
-Approved — review objections were incorporated; implementation is ready to start after the plan gate.
+In progress — the regression test is committed red; the asset-backed fix is next.
 
-Progress: [ ] step 1 [ ] step 2 [ ] step 3 [ ] step 4 [ ] step 5
+Progress: [x] step 1 [ ] step 2 [ ] step 3 [ ] step 4 [ ] step 5
 
 **Defect:** Thirteen semantically specific effects are represented by acoustically generic oscillator/noise recipes (`src/audio-engine.js:62`).
 **Reproduction:** Direct listening report plus a failing catalog assertion — none of the thirteen effect entries currently points to a purpose-recorded local audio asset.
