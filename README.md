@@ -2,9 +2,10 @@
 
 A phone-first soundboard with sixteen effects, a fixed 3×4 paginated layout, a looping
 30-second gallop, and optional live microphone monitoring. Everything runs locally in the browser:
-there are no audio downloads, trackers, accounts, or build-time dependencies.
+there are no third-party runtime requests, trackers, accounts, or build-time dependencies.
 
-Synthesized effects can overlap. The two spoken phrases share the browser's device-speech channel,
+Bundled CC0 recordings can overlap; their provenance is documented in
+[`assets/audio/README.md`](assets/audio/README.md). The two spoken phrases share the browser's device-speech channel,
 so starting either phrase replaces the one currently speaking.
 
 ## Run locally
@@ -16,7 +17,7 @@ example:
 python3 -m http.server 4173
 ```
 
-Web Audio starts from the first tap. Microphone monitoring requires browser permission and a
+Recordings start directly from a tap. Microphone monitoring uses Web Audio and requires browser permission and a
 secure origin (`https://` or local development); use headphones to avoid acoustic feedback.
 
 ## Verify
