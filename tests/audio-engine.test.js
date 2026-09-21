@@ -112,7 +112,7 @@ function createHarness(overrides = {}) {
   return { AudioClass, engine, speechSynthesis };
 }
 
-test("starts the exact recording synchronously and preserves per-effect overlap", async () => {
+test("starts recordings synchronously, overlaps different sounds, and toggles the same sound", async () => {
   const { AudioClass, engine } = createHarness();
 
   const firstStart = engine.play("clown-horn", "assets/audio/clown-horn.mp3", 0.75);
@@ -129,8 +129,12 @@ test("starts the exact recording synchronously and preserves per-effect overlap"
 
   assert.equal(AudioClass.instances[0].paused, true);
   assert.equal(AudioClass.instances[1].paused, false);
-  assert.equal(AudioClass.instances[2].paused, false);
-  assert.deepEqual([...engine.active.keys()].sort(), ["clown-horn", "engine-rev"]);
+  assert.equal(AudioClass.instances.length, 2);
+  assert.deepEqual([...engine.active.keys()], ["engine-rev"]);
+  assert.deepEqual(engine.getState().activeSoundIds, ["engine-rev"]);
+
+  await engine.play("clown-horn", "assets/audio/clown-horn.mp3");
+  assert.equal(AudioClass.instances.length, 3);
   assert.deepEqual(engine.getState().activeSoundIds.sort(), ["clown-horn", "engine-rev"]);
 });
 
@@ -312,6 +316,20 @@ test("spoken lines use one explicit global speech channel", async () => {
   assert.deepEqual(engine.getState().activeSoundIds, ["yee-haw"]);
   speechSynthesis.spoken.at(-1).onend();
   assert.deepEqual(engine.getState().activeSoundIds, []);
+});
+
+test("tapping the active spoken line stops it while a different line replaces it", async () => {
+  const { engine, speechSynthesis } = createHarness();
+
+  await engine.play("howdy-partner");
+  await engine.play("howdy-partner");
+  assert.equal(speechSynthesis.cancelCount, 1);
+  assert.deepEqual(engine.getState().activeSoundIds, []);
+
+  await engine.play("howdy-partner");
+  await engine.play("yee-haw");
+  assert.equal(speechSynthesis.cancelCount, 2);
+  assert.deepEqual(engine.getState().activeSoundIds, ["yee-haw"]);
 });
 
 test("microphone permission failures become visible state and can be retried", async () => {

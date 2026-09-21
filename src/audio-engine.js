@@ -195,11 +195,23 @@ export class AudioEngine {
     void Promise.resolve(this.context.resume()).catch(() => {});
   }
 
+  activeKeyForSound(soundId) {
+    for (const [key, active] of this.active) {
+      if (active.soundId === soundId) return key;
+    }
+    return null;
+  }
+
   play(id, source, volume = 1) {
     this.assertUsable();
+    const activeKey = this.activeKeyForSound(id);
+    if (activeKey !== null) {
+      this.stop(activeKey);
+      return Promise.resolve();
+    }
     this.resumeExistingContext();
     if (id === "gallop") {
-      if (this.active.has("gallop") || (this.gallopPendingMode ?? this.gallopMode) !== "off") {
+      if ((this.gallopPendingMode ?? this.gallopMode) !== "off") {
         this.stop("gallop");
         return Promise.resolve();
       }

@@ -38,7 +38,7 @@ export function getPadPresentation(entry, engineState) {
   }
 
   return isPlaying
-    ? { ariaLabel: `${entry.label} is playing. Tap to play again.`, state: "playing", hint: "Playing" }
+    ? { ariaLabel: `Stop ${entry.label}`, state: "playing", hint: "Playing · tap to stop" }
     : { ariaLabel: `Play ${entry.label}`, state: "off", hint: "" };
 }
 
@@ -158,8 +158,8 @@ export function mountApp(documentRef = document, windowRef = window) {
       pulsePad(button);
       controller.activate(entry).then(() => {
         if (entry.kind === "microphone") return;
-        const gallopStopped = entry.id === "gallop" && !engineState.activeSoundIds.includes("gallop");
-        announce(gallopStopped ? `${entry.label} stopped.` : `${entry.label} playing.`);
+        const stopped = !engineState.activeSoundIds.includes(entry.id);
+        announce(stopped ? `${entry.label} stopped.` : `${entry.label} playing.`);
       }).catch(handleError);
     });
     cell.append(button);
