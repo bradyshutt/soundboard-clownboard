@@ -7,16 +7,16 @@ import { sounds } from "../src/catalog.js";
 function createController() {
   const commands = [];
   const engine = {
-    play(id, src) {
-      commands.push(["play", id, src]);
+    play(id, src, volume) {
+      commands.push(["play", id, src, volume]);
       return Promise.resolve();
     },
     toggleMicrophone() {
       commands.push(["microphone"]);
       return Promise.resolve();
     },
-    toggleGallopLoop(src) {
-      commands.push(["gallop-loop", src]);
+    toggleGallopLoop(src, volume) {
+      commands.push(["gallop-loop", src, volume]);
       return Promise.resolve();
     },
   };
@@ -40,9 +40,9 @@ test("pad activation maps microphone and sound entries to distinct engine comman
   await controller.activate(sounds.find(({ id }) => id === "microphone"));
   await controller.toggleGallopLoop(gallop);
   assert.deepEqual(commands, [
-    ["play", "clown-horn", clownHorn.src],
+    ["play", "clown-horn", clownHorn.src, clownHorn.volume],
     ["microphone"],
-    ["gallop-loop", gallop.src],
+    ["gallop-loop", gallop.src, gallop.volume],
   ]);
 });
 

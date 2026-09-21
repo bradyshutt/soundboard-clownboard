@@ -61,6 +61,7 @@ test("every named effect uses a unique bundled MP3 recording", async () => {
   for (const effect of effects) {
     assert.equal(typeof effect.src, "string", `${effect.id} must declare a bundled recording`);
     assert.match(effect.src, /^assets\/audio\/[a-z0-9-]+\.mp3$/);
+    assert.ok(effect.volume > 0 && effect.volume <= 1, `${effect.id} must declare a safe volume`);
     const asset = fileURLToPath(new URL(`../${effect.src}`, import.meta.url));
     assert.ok((await stat(asset)).size > 1_000, `${effect.src} must contain audio data`);
     sources.push(effect.src);

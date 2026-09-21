@@ -12,6 +12,7 @@ function createRecordedEffect({
   onEnded,
   setTimeoutFn,
   source,
+  volume,
 }) {
   if (!AudioClass) throw new Error("This browser does not support audio playback");
   if (!source) throw new Error(`No recording configured for ${id}`);
@@ -22,7 +23,7 @@ function createRecordedEffect({
   let stopped = false;
 
   media.preload = "auto";
-  media.volume = 0.9;
+  media.volume = volume;
   media.loop = id === "gallop" || mode === "loop";
 
   const clearDeadline = () => {
@@ -158,18 +159,18 @@ export class AudioEngine {
     return this.context;
   }
 
-  play(id, source) {
+  play(id, source, volume = 1) {
     this.assertUsable();
-    if (id === "gallop") return this.startGallop("once", source);
+    if (id === "gallop") return this.startGallop("once", source, volume);
     if (id === "yee-haw") return this.speak(id, "Yee-haw!", { rate: 0.92, pitch: 1.08 });
     if (id === "howdy-partner") {
       return this.speak(id, "Howdy, partner!", { rate: 0.84, pitch: 0.9 });
     }
 
-    return this.startEffect(id, source);
+    return this.startEffect(id, source, "once", volume);
   }
 
-  async startEffect(id, source, mode = "once") {
+  async startEffect(id, source, mode = "once", volume = 1) {
     this.stopActive(id);
     const token = Symbol(id);
     let handle;
@@ -181,6 +182,7 @@ export class AudioEngine {
         id,
         mode,
         source,
+        volume,
         setTimeoutFn: this.dependencies.setTimeoutFn,
         onEnded: () => {
           if (this.active.get(id)?.token !== token) return;
@@ -221,12 +223,12 @@ export class AudioEngine {
     current.handle.stop?.();
   }
 
-  async startGallop(mode, source) {
+  async startGallop(mode, source, volume = 1) {
     const transition = ++this.gallopTransition;
     this.gallopPendingMode = mode;
 
     try {
-      await this.startEffect("gallop", source, mode);
+      await this.startEffect("gallop", source, mode, volume);
     } catch (error) {
       if (transition === this.gallopTransition) {
         this.gallopPendingMode = null;
@@ -242,7 +244,7 @@ export class AudioEngine {
     this.emit();
   }
 
-  async toggleGallopLoop(source) {
+  async toggleGallopLoop(source, volume = 1) {
     if ((this.gallopPendingMode ?? this.gallopMode) === "loop") {
       this.gallopTransition += 1;
       this.gallopPendingMode = null;
@@ -251,7 +253,7 @@ export class AudioEngine {
       this.emit();
       return;
     }
-    await this.startGallop("loop", source);
+    await this.startGallop("loop", source, volume);
   }
 
   async speak(id, text, { rate, pitch }) {

@@ -52,11 +52,11 @@ export class AppController {
   activate(entry) {
     return entry.kind === "microphone"
       ? this.engine.toggleMicrophone()
-      : this.engine.play(entry.id, entry.src);
+      : this.engine.play(entry.id, entry.src, entry.volume);
   }
 
   toggleGallopLoop(entry) {
-    return this.engine.toggleGallopLoop(entry.src);
+    return this.engine.toggleGallopLoop(entry.src, entry.volume);
   }
 }
 
