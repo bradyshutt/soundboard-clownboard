@@ -125,6 +125,7 @@ test("starts the exact recording synchronously and preserves per-effect overlap"
   assert.equal(AudioClass.instances[1].paused, false);
   assert.equal(AudioClass.instances[2].paused, false);
   assert.deepEqual([...engine.active.keys()].sort(), ["clown-horn", "engine-rev"]);
+  assert.deepEqual(engine.getState().activeSoundIds.sort(), ["clown-horn", "engine-rev"]);
 });
 
 test("recorded effects start while microphone Web Audio startup is still pending", async () => {
@@ -173,13 +174,44 @@ test("gallop one-shot and loop modes share one deterministic state machine", asy
   assert.equal(AudioClass.instances[1].paused, true);
   assert.equal(engine.gallopMode, "off");
 
-  await engine.toggleGallopLoop(source);
   await engine.play("gallop", source);
-  assert.equal(AudioClass.instances[2].paused, true);
   assert.equal(engine.gallopMode, "once");
-  assert.equal(AudioClass.instances[3].loop, false);
-  AudioClass.instances[3].end();
+  assert.equal(AudioClass.instances[2].loop, false);
+  AudioClass.instances[2].end();
   assert.equal(engine.gallopMode, "off");
+});
+
+test("tapping gallop while one-shot or loop playback is active stops it", async () => {
+  const { AudioClass, engine } = createHarness();
+
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+  assert.equal(AudioClass.instances[0].paused, true);
+  assert.equal(engine.gallopMode, "off");
+  assert.deepEqual(engine.getState().activeSoundIds, []);
+
+  await engine.toggleGallopLoop("assets/audio/gallop-loop.mp3");
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+  assert.equal(AudioClass.instances[1].paused, true);
+  assert.equal(engine.gallopMode, "off");
+  assert.deepEqual(engine.getState().activeSoundIds, []);
+});
+
+test("gallop stop emits only a coherent inactive snapshot", async () => {
+  const { engine } = createHarness();
+  const states = [];
+  engine.subscribe((state) => states.push(state));
+
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+  states.length = 0;
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+
+  assert.deepEqual(states, [{
+    activeSoundIds: [],
+    gallopMode: "off",
+    microphoneState: "off",
+    microphoneError: "",
+  }]);
 });
 
 test("a rapid first-use loop double tap resolves to off", async () => {
@@ -219,6 +251,7 @@ test("natural media completion clears only its own active handle", async () => {
 
   AudioClass.instances[0].end();
   assert.deepEqual([...engine.active.keys()], ["engine-rev"]);
+  assert.deepEqual(engine.getState().activeSoundIds, ["engine-rev"]);
 });
 
 test("spoken lines use one explicit global speech channel", async () => {
@@ -229,6 +262,9 @@ test("spoken lines use one explicit global speech channel", async () => {
   assert.equal(speechSynthesis.cancelCount, 1);
   assert.deepEqual(speechSynthesis.spoken.map(({ text }) => text), ["Howdy, partner!", "Yee-haw!"]);
   assert.deepEqual([...engine.active.keys()], ["speech"]);
+  assert.deepEqual(engine.getState().activeSoundIds, ["yee-haw"]);
+  speechSynthesis.spoken.at(-1).onend();
+  assert.deepEqual(engine.getState().activeSoundIds, []);
 });
 
 test("microphone permission failures become visible state and can be retried", async () => {

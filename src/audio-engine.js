@@ -99,6 +99,7 @@ export class AudioEngine {
 
   getState() {
     return {
+      activeSoundIds: [...this.active.values()].map(({ soundId }) => soundId),
       gallopMode: this.gallopMode,
       microphoneState: this.microphoneState,
       microphoneError: this.microphoneError,
@@ -145,7 +146,13 @@ export class AudioEngine {
   play(id, source, volume = 1) {
     this.assertUsable();
     this.resumeExistingContext();
-    if (id === "gallop") return this.startGallop("once", source, volume);
+    if (id === "gallop") {
+      if (this.active.has("gallop") || (this.gallopPendingMode ?? this.gallopMode) !== "off") {
+        this.stop("gallop");
+        return Promise.resolve();
+      }
+      return this.startGallop("once", source, volume);
+    }
     if (id === "yee-haw") return this.speak(id, "Yee-haw!", { rate: 0.92, pitch: 1.08 });
     if (id === "howdy-partner") {
       return this.speak(id, "Howdy, partner!", { rate: 0.84, pitch: 0.9 });
@@ -155,7 +162,7 @@ export class AudioEngine {
   }
 
   async startEffect(id, source, mode = "once", volume = 1) {
-    this.stopActive(id);
+    this.stopActive(id, false);
     const token = Symbol(id);
     let handle;
 
@@ -170,39 +177,46 @@ export class AudioEngine {
           if (this.active.get(id)?.token !== token) return;
           this.active.delete(id);
           if (id === "gallop") {
+            this.gallopTransition += 1;
             this.gallopMode = "off";
             this.gallopPendingMode = null;
-            this.emit();
           }
+          this.emit();
         },
       });
-      this.active.set(id, { handle, token });
+      this.active.set(id, { handle, soundId: id, token });
+      this.emit();
       await handle.started;
       return handle;
     } catch (error) {
-      if (this.active.get(id)?.token === token) this.active.delete(id);
+      const removed = this.active.get(id)?.token === token;
+      if (removed) this.active.delete(id);
       handle?.stop();
+      if (removed && id !== "gallop") this.emit();
       throw error;
     }
   }
 
   stop(id) {
-    this.stopActive(id);
     if (id === "gallop") {
+      const changed = this.active.has(id) || this.gallopPendingMode !== null || this.gallopMode !== "off";
       this.gallopTransition += 1;
       this.gallopPendingMode = null;
-      if (this.gallopMode !== "off") {
-        this.gallopMode = "off";
-        this.emit();
-      }
+      this.gallopMode = "off";
+      this.stopActive(id, false);
+      if (changed) this.emit();
+      return;
     }
+    this.stopActive(id);
   }
 
-  stopActive(id) {
+  stopActive(id, notify = true) {
     const current = this.active.get(id);
-    if (!current) return;
+    if (!current) return false;
     this.active.delete(id);
     current.handle.stop?.();
+    if (notify) this.emit();
+    return true;
   }
 
   async startGallop(mode, source, volume = 1) {
@@ -229,11 +243,7 @@ export class AudioEngine {
   async toggleGallopLoop(source, volume = 1) {
     this.resumeExistingContext();
     if ((this.gallopPendingMode ?? this.gallopMode) === "loop") {
-      this.gallopTransition += 1;
-      this.gallopPendingMode = null;
-      this.stopActive("gallop");
-      this.gallopMode = "off";
-      this.emit();
+      this.stop("gallop");
       return;
     }
     await this.startGallop("loop", source, volume);
@@ -245,7 +255,7 @@ export class AudioEngine {
     const Utterance = this.dependencies.SpeechSynthesisUtteranceClass;
     if (!synth || !Utterance) throw new Error("This browser does not support speech synthesis");
 
-    this.stop("speech");
+    this.stopActive("speech", false);
     const utterance = new Utterance(text);
     utterance.rate = rate;
     utterance.pitch = pitch;
@@ -255,12 +265,15 @@ export class AudioEngine {
     if (englishVoice) utterance.voice = englishVoice;
     const token = Symbol(id);
     const finish = () => {
-      if (this.active.get("speech")?.token === token) this.active.delete("speech");
+      if (this.active.get("speech")?.token !== token) return;
+      this.active.delete("speech");
+      this.emit();
     };
     utterance.onend = finish;
     utterance.onerror = finish;
     const handle = { stop: () => synth.cancel() };
-    this.active.set("speech", { handle, token });
+    this.active.set("speech", { handle, soundId: id, token });
+    this.emit();
     synth.speak(utterance);
   }
 
