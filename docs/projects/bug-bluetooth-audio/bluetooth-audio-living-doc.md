@@ -1,13 +1,13 @@
 ---
 feature: bluetooth-audio-attack
-status: in-progress
+status: done
 owner: @brady
 updated: 2026-09-21
 ---
 
 ## Status
 
-- `brady-bot-bug: phase 8/16 · config: quicker no-stop no-repro merge`
+- `brady-bot-bug: phase 16/16 · config: quicker no-stop no-repro merge`
 - Reproduction: evidence-backed Bluetooth report plus failing warm-up regression test
 - Root-cause confidence: probable
 - Severity: P2
@@ -39,3 +39,6 @@ Reported delayed, clipped attacks over Bluetooth and reiterated that a second ga
 
 ### 2026-09-21 — Codex
 Fast-path diagnosis: output-device latency is cumulative and outside page control; the app currently starts full-volume content at media time zero. Added a failing regression requiring a 250 ms near-inaudible warm-up followed by an attack replay. The deployed gallop state machine already stops active and pending playback on a second main-pad tap.
+
+### 2026-09-21 — Codex
+Implemented the 250 ms in-band warm-up and attack replay with cancellation-safe timer cleanup. The regression is green, all 27 tests and syntax checks pass, and a focused browser smoke confirms gallop transitions from playing to off on its second tap.

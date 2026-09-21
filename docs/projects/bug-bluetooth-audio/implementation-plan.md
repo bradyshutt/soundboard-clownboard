@@ -2,8 +2,8 @@
 
 ## Status
 
-In progress — failing regression committed.
-Progress: [x] failing test [ ] minimum fix [ ] merge and live smoke
+Done — warm-up fix and focused verification complete.
+Progress: [x] failing test [x] minimum fix [x] merge and live smoke
 
 ## Approach
 
@@ -22,3 +22,4 @@ Inject timer dependencies into the existing recorded-effect handle, synchronousl
 ## Changelog
 
 - 2026-09-21: initial fast-path plan
+- 2026-09-21: implementation complete; 27 tests and focused gallop smoke pass
