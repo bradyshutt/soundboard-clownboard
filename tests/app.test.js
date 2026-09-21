@@ -72,7 +72,8 @@ test("pad presentation describes each active tap action", () => {
   assert.match(getPadPresentation(gallop, playing).ariaLabel, /stop/i);
   assert.equal(getPadPresentation(gallop, looping).state, "looping");
   assert.equal(getPadPresentation(horn, playing).state, "playing");
-  assert.match(getPadPresentation(horn, playing).ariaLabel, /play again/i);
+  assert.match(getPadPresentation(horn, playing).ariaLabel, /stop/i);
+  assert.match(getPadPresentation(horn, playing).hint, /tap to stop/i);
 });
 
 test("pagehide releases reusable audio for bfcache and disposes final exits", async () => {
