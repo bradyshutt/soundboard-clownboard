@@ -1,0 +1,81 @@
+{
+  "assets/audio/horse-whinny.mp3": {
+    "creator": "foxen10",
+    "source": "https://freesound.org/people/foxen10/sounds/149024/",
+    "license": "CC0-1.0",
+    "sha256": "0ef831ba521c880b40e2294fd4a9a4b8387a170e07337dce21649709003ef7a4"
+  },
+  "assets/audio/horse-snort.mp3": {
+    "creator": "o_ciz",
+    "source": "https://freesound.org/people/o_ciz/sounds/475479/",
+    "license": "CC0-1.0",
+    "sha256": "dce1343f04d414e521eeb0edaf52084926b4df069f0ef85ff1465337cdc431fd"
+  },
+  "assets/audio/gallop.mp3": {
+    "creator": "HebronTheatre",
+    "source": "https://freesound.org/people/HebronTheatre/sounds/197212/",
+    "license": "CC0-1.0",
+    "transform": "Repeated and trimmed into a 30-second 128 kbps MP3",
+    "sha256": "0dd16c5ee641d45a238222bf704b62e5edd853bc1793a104489f73fad86beda6"
+  },
+  "assets/audio/clown-horn.mp3": {
+    "creator": "Gimp_Revival",
+    "source": "https://freesound.org/people/Gimp_Revival/sounds/588570/",
+    "license": "CC0-1.0",
+    "sha256": "a0f65b0a38a4487a26e920f1d059f8f8bb14bec8422506c72f2c3db22f16279f"
+  },
+  "assets/audio/sad-horn.mp3": {
+    "creator": "kirbydx",
+    "source": "https://freesound.org/people/kirbydx/sounds/175409/",
+    "license": "CC0-1.0",
+    "sha256": "de4a029a0537dbecaf49b4936b0969919f5b7b54083d3859d584b5c4cc7dee3d"
+  },
+  "assets/audio/engine-rev.mp3": {
+    "creator": "Janosch-JR",
+    "source": "https://freesound.org/people/Janosch-JR/sounds/484191/",
+    "license": "CC0-1.0",
+    "sha256": "54887e01a7a1996bdfc83e92feab139f2dd6d674ae9958a595fd7a4d474e5899"
+  },
+  "assets/audio/muscle-rev.mp3": {
+    "creator": "FlaxGod",
+    "source": "https://freesound.org/people/FlaxGod/sounds/653226/",
+    "license": "CC0-1.0",
+    "sha256": "20a2e0e54acd6e64e4764cddb5fadeec0ebc3e4de59f8b21d1394f44e02362f1"
+  },
+  "assets/audio/burnout.mp3": {
+    "creator": "audible-edge",
+    "source": "https://freesound.org/people/audible-edge/sounds/71740/",
+    "license": "CC0-1.0",
+    "sha256": "20aeb47e6c8bc49376123030edc1cd174feb56a8e452c99bb84b32b639e3437d"
+  },
+  "assets/audio/squeaky-toy.mp3": {
+    "creator": "Breviceps",
+    "source": "https://freesound.org/people/Breviceps/sounds/483922/",
+    "license": "CC0-1.0",
+    "sha256": "2124e63fec9a00f76b096a10abaca53ab85e5e2755fef9c09d2106fd6e4780bd"
+  },
+  "assets/audio/kitten-meow.mp3": {
+    "creator": "Breviceps",
+    "source": "https://freesound.org/people/Breviceps/sounds/448084/",
+    "license": "CC0-1.0",
+    "sha256": "78eaf5b601a30543905418c53a61df5e53dd93c3dfee5f7c06ae1db11876e844"
+  },
+  "assets/audio/cat-yowl.mp3": {
+    "creator": "HenKonen",
+    "source": "https://freesound.org/people/HenKonen/sounds/682082/",
+    "license": "CC0-1.0",
+    "sha256": "a16ef7edb3fdbf7c44ac9b6d9a13babfb660504946032ecdb70715904c1c2330"
+  },
+  "assets/audio/circus.mp3": {
+    "creator": "Audeption",
+    "source": "https://freesound.org/people/Audeption/sounds/418525/",
+    "license": "CC0-1.0",
+    "sha256": "db0d948a965182a479b18e3dd4345290b6f22ac715fbd22d3e08e04450ae720d"
+  },
+  "assets/audio/big-reveal.mp3": {
+    "creator": "jimhancock",
+    "source": "https://freesound.org/people/jimhancock/sounds/256128/",
+    "license": "CC0-1.0",
+    "sha256": "b38674303fb5c6ec0d714b02b95b3a1a227ef886822636cc38cc5099eae14aa2"
+  }
+}

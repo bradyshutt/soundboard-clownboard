@@ -1,16 +1,12 @@
-const GALLOP_MILLISECONDS = 30_000;
-
 function resolveAudioSource(source) {
   return new URL(`../${source}`, import.meta.url).href;
 }
 
 function createRecordedEffect({
   AudioClass,
-  clearTimeoutFn,
   id,
   mode,
   onEnded,
-  setTimeoutFn,
   source,
   volume,
 }) {
@@ -18,24 +14,15 @@ function createRecordedEffect({
   if (!source) throw new Error(`No recording configured for ${id}`);
 
   const media = new AudioClass(resolveAudioSource(source));
-  const timedGallop = id === "gallop" && mode !== "loop";
-  let deadline = null;
   let stopped = false;
 
   media.preload = "auto";
   media.volume = volume;
-  media.loop = id === "gallop" || mode === "loop";
-
-  const clearDeadline = () => {
-    if (deadline === null) return;
-    clearTimeoutFn(deadline);
-    deadline = null;
-  };
+  media.loop = mode === "loop";
 
   const finish = () => {
     if (stopped) return;
     stopped = true;
-    clearDeadline();
     media.onended = null;
     media.onerror = null;
     media.pause();
@@ -53,11 +40,7 @@ function createRecordedEffect({
     throw error;
   }
 
-  const started = Promise.resolve(playResult).then(() => {
-    if (!stopped && timedGallop) {
-      deadline = setTimeoutFn(finish, GALLOP_MILLISECONDS);
-    }
-  });
+  const started = Promise.resolve(playResult);
 
   return {
     media,
@@ -65,7 +48,6 @@ function createRecordedEffect({
     stop() {
       if (stopped) return;
       stopped = true;
-      clearDeadline();
       media.onended = null;
       media.onerror = null;
       media.pause();
@@ -82,20 +64,16 @@ export class AudioEngine {
   constructor({
     AudioClass = globalThis.Audio,
     AudioContextClass = globalThis.AudioContext ?? globalThis.webkitAudioContext,
-    clearTimeoutFn = globalThis.clearTimeout.bind(globalThis),
     mediaDevices = globalThis.navigator?.mediaDevices,
     mediaEffectFactory = createRecordedEffect,
-    setTimeoutFn = globalThis.setTimeout.bind(globalThis),
     speechSynthesis = globalThis.speechSynthesis,
     SpeechSynthesisUtteranceClass = globalThis.SpeechSynthesisUtterance,
   } = {}) {
     this.dependencies = {
       AudioClass,
       AudioContextClass,
-      clearTimeoutFn,
       mediaDevices,
       mediaEffectFactory,
-      setTimeoutFn,
       speechSynthesis,
       SpeechSynthesisUtteranceClass,
     };
@@ -159,8 +137,14 @@ export class AudioEngine {
     return this.context;
   }
 
+  resumeExistingContext() {
+    if (this.context?.state !== "suspended") return;
+    void Promise.resolve(this.context.resume()).catch(() => {});
+  }
+
   play(id, source, volume = 1) {
     this.assertUsable();
+    this.resumeExistingContext();
     if (id === "gallop") return this.startGallop("once", source, volume);
     if (id === "yee-haw") return this.speak(id, "Yee-haw!", { rate: 0.92, pitch: 1.08 });
     if (id === "howdy-partner") {
@@ -178,12 +162,10 @@ export class AudioEngine {
     try {
       handle = this.dependencies.mediaEffectFactory({
         AudioClass: this.dependencies.AudioClass,
-        clearTimeoutFn: this.dependencies.clearTimeoutFn,
         id,
         mode,
         source,
         volume,
-        setTimeoutFn: this.dependencies.setTimeoutFn,
         onEnded: () => {
           if (this.active.get(id)?.token !== token) return;
           this.active.delete(id);
@@ -245,6 +227,7 @@ export class AudioEngine {
   }
 
   async toggleGallopLoop(source, volume = 1) {
+    this.resumeExistingContext();
     if ((this.gallopPendingMode ?? this.gallopMode) === "loop") {
       this.gallopTransition += 1;
       this.gallopPendingMode = null;

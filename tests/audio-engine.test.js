@@ -82,49 +82,8 @@ function createAudioClass(playFactory = () => Promise.resolve()) {
   };
 }
 
-class FakeClock {
-  constructor() {
-    this.now = 0;
-    this.nextId = 1;
-    this.jobs = new Map();
-    this.callbacks = new Map();
-  }
-
-  setTimeout = (callback, delay) => {
-    const id = this.nextId;
-    this.nextId += 1;
-    this.jobs.set(id, { at: this.now + delay, callback });
-    this.callbacks.set(id, callback);
-    return id;
-  };
-
-  clearTimeout = (id) => {
-    this.jobs.delete(id);
-  };
-
-  advance(milliseconds) {
-    const end = this.now + milliseconds;
-    while (true) {
-      const next = [...this.jobs.entries()]
-        .filter(([, job]) => job.at <= end)
-        .sort((left, right) => left[1].at - right[1].at)[0];
-      if (!next) break;
-      const [id, job] = next;
-      this.jobs.delete(id);
-      this.now = job.at;
-      job.callback();
-    }
-    this.now = end;
-  }
-
-  fireStale(id) {
-    this.callbacks.get(id)?.();
-  }
-}
-
 function createHarness(overrides = {}) {
   const AudioClass = overrides.AudioClass ?? createAudioClass();
-  const clock = overrides.clock ?? new FakeClock();
   const speechSynthesis = {
     cancelCount: 0,
     spoken: [],
@@ -141,13 +100,11 @@ function createHarness(overrides = {}) {
   const engine = new AudioEngine({
     AudioClass,
     AudioContextClass: FakeAudioContext,
-    clearTimeoutFn: clock.clearTimeout,
-    setTimeoutFn: clock.setTimeout,
     speechSynthesis,
     SpeechSynthesisUtteranceClass: FakeUtterance,
     ...overrides,
   });
-  return { AudioClass, clock, engine, speechSynthesis };
+  return { AudioClass, engine, speechSynthesis };
 }
 
 test("starts the exact recording synchronously and preserves per-effect overlap", async () => {
@@ -192,22 +149,19 @@ test("recorded effects start while microphone Web Audio startup is still pending
   await Promise.all([microphoneStart, recordingStart]);
 });
 
-test("one-shot gallop loops its recording for exactly thirty seconds", async () => {
-  const { AudioClass, clock, engine } = createHarness();
+test("one-shot gallop ends with its naturally thirty-second recording", async () => {
+  const { AudioClass, engine } = createHarness();
   await engine.play("gallop", "assets/audio/gallop.mp3");
 
   assert.equal(engine.gallopMode, "once");
-  assert.equal(AudioClass.instances[0].loop, true);
-  clock.advance(29_999);
-  assert.equal(engine.gallopMode, "once");
-  assert.equal(AudioClass.instances[0].paused, false);
-  clock.advance(1);
+  assert.equal(AudioClass.instances[0].loop, false);
+  AudioClass.instances[0].end();
   assert.equal(engine.gallopMode, "off");
   assert.equal(AudioClass.instances[0].paused, true);
 });
 
 test("gallop one-shot and loop modes share one deterministic state machine", async () => {
-  const { AudioClass, clock, engine } = createHarness();
+  const { AudioClass, engine } = createHarness();
   const source = "assets/audio/gallop.mp3";
 
   await engine.play("gallop", source);
@@ -223,21 +177,9 @@ test("gallop one-shot and loop modes share one deterministic state machine", asy
   await engine.play("gallop", source);
   assert.equal(AudioClass.instances[2].paused, true);
   assert.equal(engine.gallopMode, "once");
-  clock.advance(30_000);
+  assert.equal(AudioClass.instances[3].loop, false);
+  AudioClass.instances[3].end();
   assert.equal(engine.gallopMode, "off");
-});
-
-test("a stopped gallop deadline cannot mutate its replacement", async () => {
-  const { clock, engine } = createHarness();
-  const source = "assets/audio/gallop.mp3";
-
-  await engine.play("gallop", source);
-  const staleDeadline = [...clock.jobs.keys()][0];
-  await engine.play("gallop", source);
-  clock.fireStale(staleDeadline);
-
-  assert.equal(engine.gallopMode, "once");
-  assert.equal(engine.active.has("gallop"), true);
 });
 
 test("a rapid first-use loop double tap resolves to off", async () => {
@@ -316,6 +258,22 @@ test("turning the microphone off disconnects nodes and stops every track", async
   assert.equal(engine.microphone, null);
 });
 
+test("a recording gesture resumes a suspended live microphone context", async () => {
+  const track = { stop() {} };
+  const mediaDevices = { async getUserMedia() { return { getTracks: () => [track] }; } };
+  const { AudioClass, engine } = createHarness({ mediaDevices });
+
+  await engine.toggleMicrophone();
+  const context = FakeAudioContext.instances[0];
+  context.state = "suspended";
+  const resumeCount = context.resumeCount;
+
+  const recordingStart = engine.play("clown-horn", "assets/audio/clown-horn.mp3");
+  assert.equal(AudioClass.instances[0].playCount, 1);
+  assert.equal(context.resumeCount, resumeCount + 1);
+  await recordingStart;
+});
+
 test("canceling an in-flight microphone request tears down the late stream", async () => {
   let resolveStream;
   const track = { stopped: false, stop() { this.stopped = true; } };
@@ -335,10 +293,10 @@ test("canceling an in-flight microphone request tears down the late stream", asy
   assert.equal(track.stopped, true);
 });
 
-test("dispose stops recordings, gallop deadlines, microphone, speech, and Web Audio", async () => {
+test("dispose stops recordings, microphone, speech, and Web Audio", async () => {
   const track = { stopped: false, stop() { this.stopped = true; } };
   const mediaDevices = { async getUserMedia() { return { getTracks: () => [track] }; } };
-  const { AudioClass, clock, engine, speechSynthesis } = createHarness({ mediaDevices });
+  const { AudioClass, engine, speechSynthesis } = createHarness({ mediaDevices });
   await engine.play("engine-rev", "assets/audio/engine-rev.mp3");
   await engine.play("gallop", "assets/audio/gallop.mp3");
   await engine.toggleMicrophone();
@@ -346,7 +304,6 @@ test("dispose stops recordings, gallop deadlines, microphone, speech, and Web Au
 
   await engine.dispose();
   assert.equal(AudioClass.instances.every(({ paused }) => paused), true);
-  assert.equal(clock.jobs.size, 0);
   assert.equal(track.stopped, true);
   assert.equal(speechSynthesis.cancelCount, 1);
   assert.equal(FakeAudioContext.instances.at(-1).closed, true);

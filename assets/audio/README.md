@@ -1,6 +1,6 @@
 # Sound recording provenance
 
-The soundboard bundles these purpose-recorded effects so each pad is recognizable from its label. All files are unmodified 128 kbps MP3 preview encodings downloaded from Freesound and indexed as [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) by Openverse. CC0 does not require attribution; the source record is retained here for auditability and thanks.
+The soundboard bundles these purpose-recorded effects so each pad is recognizable from its label. Each source was downloaded from Freesound and indexed as [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) by Openverse. The gallop source is repeated and trimmed into a thirty-second MP3; the remaining files retain their downloaded preview encodings. CC0 does not require attribution; the source record is retained here for auditability and thanks. `manifest.json` is the machine-checked record binding these claims to the shipped bytes.
 
 | App sound | File | Creator | Freesound source |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ The soundboard bundles these purpose-recorded effects so each pad is recognizabl
 | Circus Time | `circus.mp3` | Audeption | [Carnival fanfare (short)](https://freesound.org/people/Audeption/sounds/418525/) |
 | Big Reveal | `big-reveal.mp3` | jimhancock | [TaDa!.aif](https://freesound.org/people/jimhancock/sounds/256128/) |
 
-The gallop recording is designed to loop. The player loops it beneath the existing state machine, stopping after exactly thirty seconds for a normal pad tap or continuing until explicitly stopped in loop mode.
+The gallop recording is designed to loop. The bundled file contains thirty seconds of that loop for a normal pad tap; explicit loop mode repeats the bundled file until stopped.
 
 ## Release listening check
 
