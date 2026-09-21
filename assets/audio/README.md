@@ -6,7 +6,7 @@ The soundboard bundles these purpose-recorded effects so each pad is recognizabl
 | --- | --- | --- | --- |
 | Horse Whinny | `horse-whinny.mp3` | foxen10 | [Horse_Whinny.wav](https://freesound.org/people/foxen10/sounds/149024/) |
 | Horse Snort | `horse-snort.mp3` | o_ciz | [Horse(snort)_2.wav](https://freesound.org/people/o_ciz/sounds/475479/) |
-| 30s Gallop | `gallop.mp3` | HebronTheatre | [Horse Gallop - Loopable.mp3](https://freesound.org/people/HebronTheatre/sounds/197212/) |
+| 30s Gallop | `gallop.mp3`, `gallop-loop.mp3` | HebronTheatre | [Horse Gallop - Loopable.mp3](https://freesound.org/people/HebronTheatre/sounds/197212/) |
 | Clown Horn | `clown-horn.mp3` | Gimp_Revival | [Clown Horn (Single Honk).wav](https://freesound.org/people/Gimp_Revival/sounds/588570/) |
 | Sad Horn | `sad-horn.mp3` | kirbydx | [wah wah sad trombone.wav](https://freesound.org/people/kirbydx/sounds/175409/) |
 | Engine Rev | `engine-rev.mp3` | Janosch-JR | [V12 Engine - Short Rev](https://freesound.org/people/Janosch-JR/sounds/484191/) |
@@ -18,7 +18,7 @@ The soundboard bundles these purpose-recorded effects so each pad is recognizabl
 | Circus Time | `circus.mp3` | Audeption | [Carnival fanfare (short)](https://freesound.org/people/Audeption/sounds/418525/) |
 | Big Reveal | `big-reveal.mp3` | jimhancock | [TaDa!.aif](https://freesound.org/people/jimhancock/sounds/256128/) |
 
-The gallop recording is designed to loop. The bundled file contains thirty seconds of that loop for a normal pad tap; explicit loop mode repeats the bundled file until stopped.
+The gallop recording is designed to loop. `gallop.mp3` contains exactly thirty seconds for a normal pad tap; explicit loop mode repeats the original authored `gallop-loop.mp3` until stopped.
 
 ## Release listening check
 

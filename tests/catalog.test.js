@@ -34,6 +34,7 @@ test("catalog contains the sixteen stable first-release pads", () => {
 
 test("catalog capabilities identify the long-running controls", () => {
   assert.equal(sounds.find(({ id }) => id === "gallop").canLoop, true);
+  assert.equal(sounds.find(({ id }) => id === "gallop").loopSrc, "assets/audio/gallop-loop.mp3");
   assert.equal(sounds.find(({ id }) => id === "microphone").kind, "microphone");
   assert.equal(sounds.filter(({ kind }) => kind === "speech").length, 2);
 });
@@ -79,5 +80,9 @@ test("every named effect uses a unique bundled MP3 recording", async () => {
 
   assert.equal(effects.length, 13);
   assert.equal(new Set(sources).size, effects.length);
-  assert.deepEqual(Object.keys(manifest).sort(), sources.sort());
+  const loopSource = effects.find(({ id }) => id === "gallop").loopSrc;
+  const loopAsset = fileURLToPath(new URL(`../${loopSource}`, import.meta.url));
+  const loopDigest = createHash("sha256").update(await readFile(loopAsset)).digest("hex");
+  assert.equal(loopDigest, manifest[loopSource].sha256);
+  assert.deepEqual(Object.keys(manifest).sort(), [...sources, loopSource].sort());
 });

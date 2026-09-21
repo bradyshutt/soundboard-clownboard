@@ -27,6 +27,7 @@ export const sounds = Object.freeze([
     kind: "effect",
     canLoop: true,
     src: "assets/audio/gallop.mp3",
+    loopSrc: "assets/audio/gallop-loop.mp3",
     volume: 1,
   },
   { id: "clown-horn", label: "Clown Horn", icon: "🤡", color: "#d92f45", kind: "effect", src: "assets/audio/clown-horn.mp3", volume: 1 },

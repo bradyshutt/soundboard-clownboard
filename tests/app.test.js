@@ -42,7 +42,7 @@ test("pad activation maps microphone and sound entries to distinct engine comman
   assert.deepEqual(commands, [
     ["play", "clown-horn", clownHorn.src, clownHorn.volume],
     ["microphone"],
-    ["gallop-loop", gallop.src, gallop.volume],
+    ["gallop-loop", gallop.loopSrc, gallop.volume],
   ]);
 });
 

@@ -16,7 +16,14 @@
     "source": "https://freesound.org/people/HebronTheatre/sounds/197212/",
     "license": "CC0-1.0",
     "transform": "Repeated and trimmed into a 30-second 128 kbps MP3",
-    "sha256": "0dd16c5ee641d45a238222bf704b62e5edd853bc1793a104489f73fad86beda6"
+    "sha256": "52a403f5932881fc80cd527454cfe61e32578bed015b442f4284ccb4c5e490d2"
+  },
+  "assets/audio/gallop-loop.mp3": {
+    "creator": "HebronTheatre",
+    "source": "https://freesound.org/people/HebronTheatre/sounds/197212/",
+    "license": "CC0-1.0",
+    "transform": "Original loopable MP3 preview",
+    "sha256": "599945b15855b537ee4118207ee9c9bdcf99403f2bced71695c6e7679771be1c"
   },
   "assets/audio/clown-horn.mp3": {
     "creator": "Gimp_Revival",

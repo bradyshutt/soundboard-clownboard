@@ -56,7 +56,7 @@ export class AppController {
   }
 
   toggleGallopLoop(entry) {
-    return this.engine.toggleGallopLoop(entry.src, entry.volume);
+    return this.engine.toggleGallopLoop(entry.loopSrc, entry.volume);
   }
 }
 
