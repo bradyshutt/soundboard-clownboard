@@ -28,7 +28,8 @@ updated: 2026-09-21
 **Next actions:**
 - [x] Confirm the recommended asset-backed root fix.
 - [x] Review the regression-first implementation plan.
-- [ ] Make the committed recording regression test green.
+- [x] Make the committed recording regression test green.
+- [ ] Document CC0 provenance and execute the listening/playback matrix.
 - [ ] Complete fix verification and reviews.
 
 ---
@@ -121,3 +122,6 @@ Phase 7 review complete: five objections were fixed in the plan—catalog-to-eng
 
 ### 2026-09-21 — Codex
 Phase 7 approved by the user. Phase 8 step 1 complete: committed the asset-coverage reproduction test alone and observed the expected failure, `horse-whinny must declare a bundled recording`.
+
+### 2026-09-21 — Codex
+Phase 8 step 2 complete: replaced every procedural recipe with a distinct bundled CC0 recording and moved effect playback to a synchronous media-element path. The reviewed gallop state machine now loops the recording for an injected exact thirty-second one-shot deadline; 23 unit tests and syntax checks pass.
