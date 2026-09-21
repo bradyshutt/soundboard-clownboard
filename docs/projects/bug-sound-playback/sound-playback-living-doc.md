@@ -146,3 +146,6 @@ Phase 10 complete: pushed the branch and opened draft PR #2 with the provisional
 
 ### 2026-09-21 — Codex
 Phase 11 full review found three pre-release issues: one-shot gallop completion depends on a throttle-prone JavaScript timer, recording taps no longer wake an existing suspended microphone context, and prose provenance is not mechanically bound to the asset bytes. Security and simplification passes were clean; the independent Claude pass was unavailable because neither the local CLI nor Conductor has a configured Claude credential.
+
+### 2026-09-21 — Codex
+The first adaptive re-review confirmed the timer removal, suspended microphone-context recovery, and hash-bound provenance. It found one remaining side effect: the 30.225-second one-shot derivative also replaced the authored short loop, so the displayed duration is slightly long and explicit looping crosses a trimmed boundary. The release now requires distinct one-shot and loop assets.
