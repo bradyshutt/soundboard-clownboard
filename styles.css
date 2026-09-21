@@ -151,6 +151,16 @@ h1 {
   box-shadow: 0 4px 9px rgb(0 0 0 / 24%), inset 0 0 0 2px rgb(255 255 255 / 30%);
 }
 
+.sound-pad[data-state="playing"],
+.sound-pad[data-state="looping"],
+.sound-pad[data-state="live"] {
+  filter: saturate(1.25) brightness(1.13);
+  box-shadow:
+    0 0 0 3px rgb(255 248 232 / 82%),
+    0 0 18px color-mix(in srgb, var(--pad-color) 72%, white),
+    inset 0 0 0 2px rgb(255 255 255 / 28%);
+}
+
 .sound-pad:focus-visible,
 .nav-button:focus-visible,
 .loop-button:focus-visible {

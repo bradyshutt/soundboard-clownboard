@@ -60,11 +60,19 @@ test("microphone accessibility text reflects permission, live, and error states"
   assert.match(error.ariaLabel, /permission denied/i);
 });
 
-test("gallop presentation derives loop state from the engine", () => {
+test("pad presentation describes each active tap action", () => {
   const gallop = sounds.find(({ id }) => id === "gallop");
-  assert.equal(getPadPresentation(gallop, { gallopMode: "off" }).state, "off");
-  assert.equal(getPadPresentation(gallop, { gallopMode: "once" }).state, "once");
-  assert.equal(getPadPresentation(gallop, { gallopMode: "loop" }).state, "looping");
+  const horn = sounds.find(({ id }) => id === "clown-horn");
+  const off = { activeSoundIds: [], gallopMode: "off" };
+  const playing = { activeSoundIds: ["gallop", "clown-horn"], gallopMode: "once" };
+  const looping = { activeSoundIds: ["gallop"], gallopMode: "loop" };
+
+  assert.equal(getPadPresentation(gallop, off).state, "off");
+  assert.equal(getPadPresentation(gallop, playing).state, "playing");
+  assert.match(getPadPresentation(gallop, playing).ariaLabel, /stop/i);
+  assert.equal(getPadPresentation(gallop, looping).state, "looping");
+  assert.equal(getPadPresentation(horn, playing).state, "playing");
+  assert.match(getPadPresentation(horn, playing).ariaLabel, /play again/i);
 });
 
 test("pagehide releases reusable audio for bfcache and disposes final exits", async () => {
