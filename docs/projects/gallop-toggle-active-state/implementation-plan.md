@@ -2,8 +2,8 @@
 
 ## Status
 
-Approved — implement the smallest extension of the existing active-handle model.
-Progress: [ ] step 1 [ ] step 2
+Done — implemented, reviewed, and verified.
+Progress: [x] step 1 [x] step 2
 
 ## Approach
 
@@ -26,3 +26,4 @@ The guidance bank was unavailable in this cloud workspace; no external guidance 
 
 - 2026-09-21: initial plan
 - 2026-09-21: clarified atomic gallop snapshots and action-accurate active labels after plan review
+- 2026-09-21: implementation and targeted verification complete

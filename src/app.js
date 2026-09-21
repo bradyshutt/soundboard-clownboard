@@ -157,7 +157,9 @@ export function mountApp(documentRef = document, windowRef = window) {
     button.addEventListener("click", () => {
       pulsePad(button);
       controller.activate(entry).then(() => {
-        if (entry.kind !== "microphone") announce(`${entry.label} playing.`);
+        if (entry.kind === "microphone") return;
+        const gallopStopped = entry.id === "gallop" && !engineState.activeSoundIds.includes("gallop");
+        announce(gallopStopped ? `${entry.label} stopped.` : `${entry.label} playing.`);
       }).catch(handleError);
     });
     cell.append(button);

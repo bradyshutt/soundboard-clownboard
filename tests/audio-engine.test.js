@@ -231,6 +231,21 @@ test("a rapid first-use loop double tap resolves to off", async () => {
   assert.equal(engine.active.has("gallop"), false);
 });
 
+test("stopping a pending gallop swallows its interrupted play rejection", async () => {
+  let rejectPlay;
+  const pending = new Promise((resolve, reject) => { rejectPlay = reject; });
+  const AudioClass = createAudioClass(() => pending);
+  const { engine } = createHarness({ AudioClass });
+
+  const firstTap = engine.play("gallop", "assets/audio/gallop.mp3");
+  await engine.play("gallop", "assets/audio/gallop.mp3");
+  rejectPlay(new Error("play interrupted by pause"));
+  await firstTap;
+
+  assert.equal(engine.gallopMode, "off");
+  assert.deepEqual(engine.getState().activeSoundIds, []);
+});
+
 test("playback rejection clears active and gallop state", async () => {
   const failure = new Error("media blocked");
   const AudioClass = createAudioClass(() => Promise.reject(failure));

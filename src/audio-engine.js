@@ -226,11 +226,10 @@ export class AudioEngine {
     try {
       await this.startEffect("gallop", source, mode, volume);
     } catch (error) {
-      if (transition === this.gallopTransition) {
-        this.gallopPendingMode = null;
-        this.gallopMode = "off";
-        this.emit();
-      }
+      if (transition !== this.gallopTransition) return;
+      this.gallopPendingMode = null;
+      this.gallopMode = "off";
+      this.emit();
       throw error;
     }
 

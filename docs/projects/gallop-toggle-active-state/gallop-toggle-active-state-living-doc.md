@@ -1,6 +1,6 @@
 ---
 feature: gallop-toggle-active-state
-status: draft
+status: done
 owner: @brady
 updated: 2026-09-21
 ---
@@ -16,15 +16,17 @@ updated: 2026-09-21
 
 ## Status
 
-**TL;DR:** Make the gallop pad itself a play/stop toggle and visibly mark every pad whose sound is currently playing. The change is scoped and ready for implementation.
+**TL;DR:** The gallop pad is now a play/stop toggle, and every currently playing pad has a persistent active state. The change is implemented, reviewed, and verified.
 
 **Current state:**
-- Recording-backed playback is merged on `main`.
-- Research and a short implementation plan are in progress.
+- Gallop taps stop active one-shot, loop, and pending playback.
+- Effect and speech lifecycles publish active IDs to the UI.
+- 26 tests, syntax checks, and the targeted mobile smoke pass are green.
 
 **Next actions:**
-- [ ] Implement engine active-state reporting and gallop toggle behavior.
-- [ ] Wire pad presentation, run targeted tests, and ship to `main`.
+- [x] Implement engine active-state reporting and gallop toggle behavior.
+- [x] Wire pad presentation and run targeted verification.
+- [ ] Merge PR #3 and verify GitHub Pages.
 
 ---
 
@@ -67,3 +69,6 @@ Initial scaffold.
 
 ### 2026-09-21 — Codex
 Scoped the follow-up from the merged recording fix: gallop tap toggle plus engine-driven active presentation for every playing pad, with a targeted verification pass per the user's request to ship quickly.
+
+### 2026-09-21 — Codex
+Implemented active sound snapshots, atomic gallop stop transitions, action-accurate pad labels, and persistent active styling. The fast final review found and fixed two edge cases: stopped gallop was announced as playing, and stopping a pending media start could surface an intentional `AbortError`. All 26 tests, syntax checks, and the mobile gallop playing/off smoke pass are green.
