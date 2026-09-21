@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { stat } from "node:fs/promises";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { PAGE_SIZE, clampPage, getPage, pageCount, sounds } from "../src/catalog.js";
 
@@ -50,4 +52,20 @@ test("page navigation clamps to available boundaries", () => {
   assert.equal(clampPage(99), 1);
   assert.equal(clampPage(Number.NaN), 0);
   assert.equal(getPage(99)[0].id, "rising-pad");
+});
+
+test("every named effect uses a unique bundled MP3 recording", async () => {
+  const effects = sounds.filter(({ kind }) => kind === "effect");
+  const sources = [];
+
+  for (const effect of effects) {
+    assert.equal(typeof effect.src, "string", `${effect.id} must declare a bundled recording`);
+    assert.match(effect.src, /^assets\/audio\/[a-z0-9-]+\.mp3$/);
+    const asset = fileURLToPath(new URL(`../${effect.src}`, import.meta.url));
+    assert.ok((await stat(asset)).size > 1_000, `${effect.src} must contain audio data`);
+    sources.push(effect.src);
+  }
+
+  assert.equal(effects.length, 13);
+  assert.equal(new Set(sources).size, effects.length);
 });
