@@ -100,6 +100,11 @@ function createHarness(overrides = {}) {
   const engine = new AudioEngine({
     AudioClass,
     AudioContextClass: FakeAudioContext,
+    clearTimeoutFn() {},
+    setTimeoutFn(callback) {
+      queueMicrotask(callback);
+      return 1;
+    },
     speechSynthesis,
     SpeechSynthesisUtteranceClass: FakeUtterance,
     ...overrides,
@@ -113,10 +118,11 @@ test("starts the exact recording synchronously and preserves per-effect overlap"
   const firstStart = engine.play("clown-horn", "assets/audio/clown-horn.mp3", 0.75);
   assert.equal(AudioClass.instances.length, 1);
   assert.equal(AudioClass.instances[0].playCount, 1);
-  assert.equal(AudioClass.instances[0].volume, 0.75);
+  assert.equal(AudioClass.instances[0].volume, 0.001);
   assert.match(AudioClass.instances[0].src, /assets\/audio\/clown-horn\.mp3$/);
   assert.equal(FakeAudioContext.instances.length, 0);
   await firstStart;
+  assert.equal(AudioClass.instances[0].volume, 0.75);
 
   await engine.play("engine-rev", "assets/audio/engine-rev.mp3");
   await engine.play("clown-horn", "assets/audio/clown-horn.mp3");

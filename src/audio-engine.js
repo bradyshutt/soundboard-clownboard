@@ -1,12 +1,17 @@
+const OUTPUT_WARMUP_MILLISECONDS = 250;
+const OUTPUT_WARMUP_VOLUME = 0.001;
+
 function resolveAudioSource(source) {
   return new URL(`../${source}`, import.meta.url).href;
 }
 
 function createRecordedEffect({
   AudioClass,
+  clearTimeoutFn,
   id,
   mode,
   onEnded,
+  setTimeoutFn,
   source,
   volume,
 }) {
@@ -14,15 +19,39 @@ function createRecordedEffect({
   if (!source) throw new Error(`No recording configured for ${id}`);
 
   const media = new AudioClass(resolveAudioSource(source));
+  let resolveStarted;
+  let rejectStarted;
   let stopped = false;
+  let warmupTimer = null;
+  let startedSettled = false;
+
+  const started = new Promise((resolve, reject) => {
+    resolveStarted = resolve;
+    rejectStarted = reject;
+  });
+
+  const settleStarted = (error) => {
+    if (startedSettled) return;
+    startedSettled = true;
+    if (error) rejectStarted(error);
+    else resolveStarted();
+  };
+
+  const clearWarmup = () => {
+    if (warmupTimer === null) return;
+    clearTimeoutFn(warmupTimer);
+    warmupTimer = null;
+  };
 
   media.preload = "auto";
-  media.volume = volume;
+  media.volume = Math.min(volume, OUTPUT_WARMUP_VOLUME);
   media.loop = mode === "loop";
 
   const finish = () => {
     if (stopped) return;
     stopped = true;
+    clearWarmup();
+    settleStarted();
     media.onended = null;
     media.onerror = null;
     media.pause();
@@ -40,7 +69,24 @@ function createRecordedEffect({
     throw error;
   }
 
-  const started = Promise.resolve(playResult);
+  Promise.resolve(playResult).then(() => {
+    if (stopped) {
+      settleStarted();
+      return;
+    }
+    warmupTimer = setTimeoutFn(() => {
+      warmupTimer = null;
+      if (!stopped) {
+        try {
+          media.currentTime = 0;
+        } catch {
+          // Some browsers reject seeking before media metadata has loaded.
+        }
+        media.volume = volume;
+      }
+      settleStarted();
+    }, OUTPUT_WARMUP_MILLISECONDS);
+  }, (error) => settleStarted(stopped ? undefined : error));
 
   return {
     media,
@@ -48,6 +94,8 @@ function createRecordedEffect({
     stop() {
       if (stopped) return;
       stopped = true;
+      clearWarmup();
+      settleStarted();
       media.onended = null;
       media.onerror = null;
       media.pause();
@@ -64,16 +112,20 @@ export class AudioEngine {
   constructor({
     AudioClass = globalThis.Audio,
     AudioContextClass = globalThis.AudioContext ?? globalThis.webkitAudioContext,
+    clearTimeoutFn = globalThis.clearTimeout.bind(globalThis),
     mediaDevices = globalThis.navigator?.mediaDevices,
     mediaEffectFactory = createRecordedEffect,
+    setTimeoutFn = globalThis.setTimeout.bind(globalThis),
     speechSynthesis = globalThis.speechSynthesis,
     SpeechSynthesisUtteranceClass = globalThis.SpeechSynthesisUtterance,
   } = {}) {
     this.dependencies = {
       AudioClass,
       AudioContextClass,
+      clearTimeoutFn,
       mediaDevices,
       mediaEffectFactory,
+      setTimeoutFn,
       speechSynthesis,
       SpeechSynthesisUtteranceClass,
     };
@@ -169,6 +221,7 @@ export class AudioEngine {
     try {
       handle = this.dependencies.mediaEffectFactory({
         AudioClass: this.dependencies.AudioClass,
+        clearTimeoutFn: this.dependencies.clearTimeoutFn,
         id,
         mode,
         source,
@@ -183,6 +236,7 @@ export class AudioEngine {
           }
           this.emit();
         },
+        setTimeoutFn: this.dependencies.setTimeoutFn,
       });
       this.active.set(id, { handle, soundId: id, token });
       this.emit();
