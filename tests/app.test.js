@@ -7,16 +7,16 @@ import { sounds } from "../src/catalog.js";
 function createController() {
   const commands = [];
   const engine = {
-    play(id) {
-      commands.push(["play", id]);
+    play(id, src, volume) {
+      commands.push(["play", id, src, volume]);
       return Promise.resolve();
     },
     toggleMicrophone() {
       commands.push(["microphone"]);
       return Promise.resolve();
     },
-    toggleGallopLoop() {
-      commands.push(["gallop-loop"]);
+    toggleGallopLoop(src, volume) {
+      commands.push(["gallop-loop", src, volume]);
       return Promise.resolve();
     },
   };
@@ -34,10 +34,16 @@ test("controller clamps navigation without touching active audio", () => {
 
 test("pad activation maps microphone and sound entries to distinct engine commands", async () => {
   const { controller, commands } = createController();
-  await controller.activate(sounds.find(({ id }) => id === "clown-horn"));
+  const clownHorn = sounds.find(({ id }) => id === "clown-horn");
+  const gallop = sounds.find(({ id }) => id === "gallop");
+  await controller.activate(clownHorn);
   await controller.activate(sounds.find(({ id }) => id === "microphone"));
-  await controller.toggleGallopLoop();
-  assert.deepEqual(commands, [["play", "clown-horn"], ["microphone"], ["gallop-loop"]]);
+  await controller.toggleGallopLoop(gallop);
+  assert.deepEqual(commands, [
+    ["play", "clown-horn", clownHorn.src, clownHorn.volume],
+    ["microphone"],
+    ["gallop-loop", gallop.loopSrc, gallop.volume],
+  ]);
 });
 
 test("microphone accessibility text reflects permission, live, and error states", () => {

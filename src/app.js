@@ -52,11 +52,11 @@ export class AppController {
   activate(entry) {
     return entry.kind === "microphone"
       ? this.engine.toggleMicrophone()
-      : this.engine.play(entry.id);
+      : this.engine.play(entry.id, entry.src, entry.volume);
   }
 
-  toggleGallopLoop() {
-    return this.engine.toggleGallopLoop();
+  toggleGallopLoop(entry) {
+    return this.engine.toggleGallopLoop(entry.loopSrc, entry.volume);
   }
 }
 
@@ -165,7 +165,7 @@ export function mountApp(documentRef = document, windowRef = window) {
       loop.setAttribute("aria-label", "Loop 30-second gallop");
       loop.setAttribute("aria-pressed", String(engineState.gallopMode === "loop"));
       loop.addEventListener("click", () => {
-        controller.toggleGallopLoop().catch(handleError);
+        controller.toggleGallopLoop(entry).catch(handleError);
       });
       cell.append(loop);
     }
