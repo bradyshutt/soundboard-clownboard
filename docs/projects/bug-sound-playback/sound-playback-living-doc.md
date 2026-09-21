@@ -20,7 +20,7 @@ updated: 2026-09-21
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 10/16 · config: baseline`
+- `brady-bot-bug: phase 12/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
 - Root-cause confidence: proven
@@ -32,6 +32,7 @@ updated: 2026-09-21
 - [x] Document CC0 provenance.
 - [x] Complete the isolated-worktree revert-check.
 - [x] Execute the automated playback, decoding, source-purpose, and loudness matrix.
+- [x] Resolve full-review findings and complete the adaptive re-review.
 - [ ] Complete human listening confirmation on the deployed phone UI.
 - [ ] Complete PR reviews, CI, merge, and production deployment.
 
@@ -149,3 +150,6 @@ Phase 11 full review found three pre-release issues: one-shot gallop completion 
 
 ### 2026-09-21 — Codex
 The first adaptive re-review confirmed the timer removal, suspended microphone-context recovery, and hash-bound provenance. It found one remaining side effect: the 30.225-second one-shot derivative also replaced the authored short loop, so the displayed duration is slightly long and explicit looping crosses a trimmed boundary. The release now requires distinct one-shot and loop assets.
+
+### 2026-09-21 — Codex
+Phase 12 complete: split gallop playback into an exactly 30.000-second one-shot asset and the original authored 2.891-second loop asset. The final mobile-Chrome matrix decoded the one-shot at exactly 30 seconds, exercised loop/off and microphone live/off behavior, advanced all thirteen recordings, and found no application errors. All 23 tests and syntax checks pass.
