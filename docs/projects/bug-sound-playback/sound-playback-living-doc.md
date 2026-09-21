@@ -143,3 +143,6 @@ Phase 9 complete: the isolated revert-check failed for the original missing-asse
 
 ### 2026-09-21 — Codex
 Phase 10 complete: pushed the branch and opened draft PR #2 with the provisional bug diagnosis, red/green proof, verification matrix, CC0 decision, and rollback notes. The repository owner is attached as assignee because the draft cannot request its own author as reviewer.
+
+### 2026-09-21 — Codex
+Phase 11 full review found three pre-release issues: one-shot gallop completion depends on a throttle-prone JavaScript timer, recording taps no longer wake an existing suspended microphone context, and prose provenance is not mechanically bound to the asset bytes. Security and simplification passes were clean; the independent Claude pass was unavailable because neither the local CLI nor Conductor has a configured Claude credential.
