@@ -31,7 +31,8 @@ updated: 2026-09-21
 - [x] Make the committed recording regression test green.
 - [x] Document CC0 provenance.
 - [x] Complete the isolated-worktree revert-check.
-- [ ] Execute the listening/playback matrix.
+- [x] Execute the automated playback, decoding, source-purpose, and loudness matrix.
+- [ ] Complete human listening confirmation on the deployed phone UI.
 - [ ] Complete fix verification and reviews.
 
 ---
@@ -133,3 +134,6 @@ Phase 8 step 3 complete: documented each recording's creator, Freesound source, 
 
 ### 2026-09-21 — Codex
 Phase 8 step 4 complete: at the test-only commit in an isolated temporary worktree, the regression test failed with `horse-whinny must declare a bundled recording`; the fixed branch returned to 23 passing tests and a clean syntax check.
+
+### 2026-09-21 — Codex
+Phase 8 implementation complete: the mobile-Chrome matrix decoded all thirteen recordings, advanced every media element without errors, confirmed speech and microphone live/off behavior, and exercised gallop loop/off. Raw recording levels varied by nearly 10×, so per-pad volume metadata now brings effective RMS into a narrow phone-safe range (0.025–0.061). Source titles/tags match every app label; physical listening remains a post-deploy human confirmation because this cloud workspace has no audio output.
