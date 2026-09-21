@@ -20,14 +20,14 @@ updated: 2026-09-20
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 6/16 · config: baseline`
+- `brady-bot-bug: phase 7/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
 - Root-cause confidence: proven
 
 **Next actions:**
 - [x] Confirm the recommended asset-backed root fix.
-- [ ] Review the regression-first implementation plan.
+- [x] Review the regression-first implementation plan.
 - [ ] Implement red-to-green in incremental commits.
 
 ---
@@ -114,3 +114,6 @@ Phase 5 approved: the user said “Do it,” authorizing the complete asset-back
 
 ### 2026-09-20 — Codex
 Phase 6 complete: wrote the five-step bugfix plan with a test-only red commit, one asset-backed fix across all thirteen siblings, provenance documentation, a revert-check, and live production verification.
+
+### 2026-09-20 — Codex
+Phase 7 review complete: five objections were fixed in the plan—catalog-to-engine source wiring, exact gallop timing and stale-deadline tests, synchronous gesture-safe playback, an executed semantic listening matrix, and an isolated-worktree revert-check. Convention fit found no objections.
