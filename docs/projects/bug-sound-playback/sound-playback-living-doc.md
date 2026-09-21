@@ -29,7 +29,8 @@ updated: 2026-09-21
 - [x] Confirm the recommended asset-backed root fix.
 - [x] Review the regression-first implementation plan.
 - [x] Make the committed recording regression test green.
-- [ ] Document CC0 provenance and execute the listening/playback matrix.
+- [x] Document CC0 provenance.
+- [ ] Execute the listening/playback matrix and revert-check.
 - [ ] Complete fix verification and reviews.
 
 ---
@@ -125,3 +126,6 @@ Phase 7 approved by the user. Phase 8 step 1 complete: committed the asset-cover
 
 ### 2026-09-21 — Codex
 Phase 8 step 2 complete: replaced every procedural recipe with a distinct bundled CC0 recording and moved effect playback to a synchronous media-element path. The reviewed gallop state machine now loops the recording for an injected exact thirty-second one-shot deadline; 23 unit tests and syntax checks pass.
+
+### 2026-09-21 — Codex
+Phase 8 step 3 complete: documented each recording's creator, Freesound source, CC0 status, and unchanged MP3 encoding, and added the per-pad phone listening criteria to the asset provenance guide.

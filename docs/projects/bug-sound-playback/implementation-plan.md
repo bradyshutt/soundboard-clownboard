@@ -2,9 +2,9 @@
 
 ## Status
 
-In progress — the asset-backed player and all thirteen recordings are committed green; provenance and verification remain.
+In progress — the asset-backed player, all thirteen recordings, and CC0 provenance are committed; verification remains.
 
-Progress: [x] step 1 [x] step 2 [ ] step 3 [ ] step 4 [ ] step 5
+Progress: [x] step 1 [x] step 2 [x] step 3 [ ] step 4 [ ] step 5
 
 **Defect:** Thirteen semantically specific effects are represented by acoustically generic oscillator/noise recipes (`src/audio-engine.js:62`).
 **Reproduction:** Direct listening report plus a failing catalog assertion — none of the thirteen effect entries currently points to a purpose-recorded local audio asset.
