@@ -20,7 +20,7 @@ updated: 2026-09-21
 **TL;DR:** Production playback works, but most named effects sound weird and do not resemble their labels. The defect is reproduced: all thirteen named effects are hand-built from bare oscillators or generated noise, with no purpose-recorded audio assets.
 
 **Current state:**
-- `brady-bot-bug: phase 8/16 · config: baseline`
+- `brady-bot-bug: phase 10/16 · config: baseline`
 - Verdict: `actionable` · severity P2
 - Reproduction: direct user listening report plus failing catalog assertion showing 0/13 named effects have purpose-recorded audio assets
 - Root-cause confidence: proven
@@ -33,7 +33,7 @@ updated: 2026-09-21
 - [x] Complete the isolated-worktree revert-check.
 - [x] Execute the automated playback, decoding, source-purpose, and loudness matrix.
 - [ ] Complete human listening confirmation on the deployed phone UI.
-- [ ] Complete fix verification and reviews.
+- [ ] Complete PR reviews, CI, merge, and production deployment.
 
 ---
 
@@ -137,3 +137,9 @@ Phase 8 step 4 complete: at the test-only commit in an isolated temporary worktr
 
 ### 2026-09-21 — Codex
 Phase 8 implementation complete: the mobile-Chrome matrix decoded all thirteen recordings, advanced every media element without errors, confirmed speech and microphone live/off behavior, and exercised gallop loop/off. Raw recording levels varied by nearly 10×, so per-pad volume metadata now brings effective RMS into a narrow phone-safe range (0.025–0.061). Source titles/tags match every app label; physical listening remains a post-deploy human confirmation because this cloud workspace has no audio output.
+
+### 2026-09-21 — Codex
+Phase 9 complete: the isolated revert-check failed for the original missing-asset reason, the original source-purpose reproduction is removed for all thirteen siblings, 23 tests and syntax checks pass, and the mobile browser matrix is green. Production confirmation will be the deployed asset/playback matrix plus the user's physical-phone listening result.
+
+### 2026-09-21 — Codex
+Phase 10 complete: pushed the branch and opened draft PR #2 with the provisional bug diagnosis, red/green proof, verification matrix, CC0 decision, and rollback notes. The repository owner is attached as assignee because the draft cannot request its own author as reviewer.
