@@ -30,7 +30,8 @@ updated: 2026-09-21
 - [x] Review the regression-first implementation plan.
 - [x] Make the committed recording regression test green.
 - [x] Document CC0 provenance.
-- [ ] Execute the listening/playback matrix and revert-check.
+- [x] Complete the isolated-worktree revert-check.
+- [ ] Execute the listening/playback matrix.
 - [ ] Complete fix verification and reviews.
 
 ---
@@ -129,3 +130,6 @@ Phase 8 step 2 complete: replaced every procedural recipe with a distinct bundle
 
 ### 2026-09-21 — Codex
 Phase 8 step 3 complete: documented each recording's creator, Freesound source, CC0 status, and unchanged MP3 encoding, and added the per-pad phone listening criteria to the asset provenance guide.
+
+### 2026-09-21 — Codex
+Phase 8 step 4 complete: at the test-only commit in an isolated temporary worktree, the regression test failed with `horse-whinny must declare a bundled recording`; the fixed branch returned to 23 passing tests and a clean syntax check.
