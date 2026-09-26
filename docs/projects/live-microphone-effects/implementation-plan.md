@@ -2,8 +2,8 @@
 
 ## Status
 
-In progress.
-Progress: [ ] catalog and UI state [ ] effect graphs and teardown [ ] ship and live smoke
+Done — implemented and locally verified.
+Progress: [x] catalog and UI state [x] effect graphs and teardown [x] ship and live smoke
 
 ## Approach
 
@@ -23,3 +23,4 @@ Add microphone identity/profile metadata to the catalog and engine snapshots. Re
 ## Changelog
 
 - 2026-09-26: initial fast-path plan
+- 2026-09-26: implementation complete; 29 tests and mobile browser switch/stop smoke pass

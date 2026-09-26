@@ -1,7 +1,7 @@
 # Clownboard
 
 A phone-first soundboard with sixteen effects, a fixed 3×4 paginated layout, a looping
-30-second gallop, and optional live microphone monitoring. Everything runs locally in the browser:
+30-second gallop, and Clean, Robot, Echo, and Megaphone live microphone modes. Everything runs locally in the browser:
 there are no third-party runtime requests, trackers, accounts, or build-time dependencies.
 
 Bundled CC0 recordings can overlap; their provenance is documented in
@@ -17,8 +17,8 @@ example:
 python3 -m http.server 4173
 ```
 
-Recordings start directly from a tap. Microphone monitoring uses Web Audio and requires browser permission and a
-secure origin (`https://` or local development); use headphones to avoid acoustic feedback.
+Recordings start directly from a tap. Microphone modes use Web Audio, share one permission and capture stream, and
+require a secure origin (`https://` or local development); use headphones to avoid acoustic feedback.
 
 ## Verify
 

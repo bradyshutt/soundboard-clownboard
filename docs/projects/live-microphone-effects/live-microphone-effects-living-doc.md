@@ -1,6 +1,6 @@
 ---
 feature: live-microphone-effects
-status: in-progress
+status: done
 owner: @brady
 updated: 2026-09-26
 ---
@@ -10,9 +10,10 @@ updated: 2026-09-26
 **TL;DR:** Add Robot, Echo, and Megaphone live microphone pads beside Clean Mic, using one shared microphone stream and dependency-free Web Audio processing.
 
 **Next actions:**
-- [ ] Add catalog/UI state for four microphone modes.
-- [ ] Add replaceable audio graphs with safe switching and teardown.
-- [ ] Run focused checks, merge, and verify GitHub Pages.
+- [x] Add catalog/UI state for four microphone modes.
+- [x] Add replaceable audio graphs with safe switching and teardown.
+- [x] Run focused checks.
+- [ ] Merge and verify GitHub Pages.
 
 ## Context
 
@@ -46,3 +47,6 @@ Requested more live microphone buttons with different voice effects and asked fo
 
 ### 2026-09-26 — Codex
 Selected the proposed Robot, Echo, and Megaphone set. Research confirmed that a replaceable effect graph preserves the existing single-stream permission and teardown model with lower mobile CPU use than persistent parallel effect buses.
+
+### 2026-09-26 — Codex
+Implemented four independently presented mic modes over one captured stream. Switching reuses permission and replaces only the effect graph; stopping still disconnects all nodes, stops modulation sources, and stops every media track. All 29 tests and syntax checks pass, and mobile Chrome exercised Clean → Robot → Echo → Megaphone → off without errors.
