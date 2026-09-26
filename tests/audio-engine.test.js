@@ -39,6 +39,38 @@ class FakeAudioContext {
     return audioNode();
   }
 
+  createDelay() {
+    const node = { ...audioNode(), delayTime: audioParam() };
+    this.delay = node;
+    return node;
+  }
+
+  createBiquadFilter() {
+    const node = { ...audioNode(), frequency: audioParam(), Q: audioParam(), type: "" };
+    this.filters ??= [];
+    this.filters.push(node);
+    return node;
+  }
+
+  createWaveShaper() {
+    const node = { ...audioNode(), curve: null, oversample: "none" };
+    this.waveShaper = node;
+    return node;
+  }
+
+  createOscillator() {
+    const node = {
+      ...audioNode(),
+      frequency: audioParam(),
+      started: false,
+      stopped: false,
+      start() { this.started = true; },
+      stop() { this.stopped = true; },
+    };
+    this.oscillator = node;
+    return node;
+  }
+
   async resume() {
     this.state = "running";
     this.resumeCount += 1;
@@ -357,6 +389,35 @@ test("turning the microphone off disconnects nodes and stops every track", async
   assert.equal(engine.microphoneState, "off");
   assert.equal(track.stopped, true);
   assert.equal(engine.microphone, null);
+});
+
+test("live microphone effects switch graphs while reusing one captured stream", async () => {
+  const track = { stopped: false, stop() { this.stopped = true; } };
+  const stream = { getTracks: () => [track] };
+  let requestCount = 0;
+  const mediaDevices = { async getUserMedia() { requestCount += 1; return stream; } };
+  const { engine } = createHarness({ mediaDevices });
+
+  await engine.toggleMicrophone("microphone-robot", "robot");
+  const context = FakeAudioContext.instances[0];
+  assert.equal(engine.getState().microphoneId, "microphone-robot");
+  assert.equal(context.oscillator.started, true);
+
+  await engine.toggleMicrophone("microphone-echo", "echo");
+  assert.equal(requestCount, 1);
+  assert.equal(track.stopped, false);
+  assert.equal(context.oscillator.stopped, true);
+  assert.equal(context.delay.delayTime.value, 0.18);
+  assert.equal(engine.getState().microphoneId, "microphone-echo");
+
+  await engine.toggleMicrophone("microphone-megaphone", "megaphone");
+  assert.deepEqual(context.filters.map(({ type }) => type), ["highpass", "lowpass"]);
+  assert.ok(context.waveShaper.curve instanceof Float32Array);
+  assert.equal(requestCount, 1);
+
+  await engine.toggleMicrophone("microphone-megaphone", "megaphone");
+  assert.equal(engine.microphoneState, "off");
+  assert.equal(track.stopped, true);
 });
 
 test("a recording gesture resumes a suspended live microphone context", async () => {

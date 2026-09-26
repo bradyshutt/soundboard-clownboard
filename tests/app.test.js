@@ -11,8 +11,8 @@ function createController() {
       commands.push(["play", id, src, volume]);
       return Promise.resolve();
     },
-    toggleMicrophone() {
-      commands.push(["microphone"]);
+    toggleMicrophone(id, effect) {
+      commands.push(["microphone", id, effect]);
       return Promise.resolve();
     },
     toggleGallopLoop(src, volume) {
@@ -38,25 +38,33 @@ test("pad activation maps microphone and sound entries to distinct engine comman
   const gallop = sounds.find(({ id }) => id === "gallop");
   await controller.activate(clownHorn);
   await controller.activate(sounds.find(({ id }) => id === "microphone"));
+  await controller.activate(sounds.find(({ id }) => id === "microphone-robot"));
   await controller.toggleGallopLoop(gallop);
   assert.deepEqual(commands, [
     ["play", "clown-horn", clownHorn.src, clownHorn.volume],
-    ["microphone"],
+    ["microphone", "microphone", "clean"],
+    ["microphone", "microphone-robot", "robot"],
     ["gallop-loop", gallop.loopSrc, gallop.volume],
   ]);
 });
 
 test("microphone accessibility text reflects permission, live, and error states", () => {
   const microphone = sounds.find(({ id }) => id === "microphone");
-  const off = getPadPresentation(microphone, { microphoneState: "off" });
-  const live = getPadPresentation(microphone, { microphoneState: "live" });
+  const robot = sounds.find(({ id }) => id === "microphone-robot");
+  const off = getPadPresentation(microphone, { microphoneState: "off", microphoneId: null });
+  const liveState = { microphoneState: "live", microphoneId: "microphone-robot" };
+  const cleanWhileRobotIsLive = getPadPresentation(microphone, liveState);
+  const live = getPadPresentation(robot, liveState);
   const error = getPadPresentation(microphone, {
     microphoneState: "error",
+    microphoneId: "microphone",
     microphoneError: "Permission denied.",
   });
 
   assert.match(off.ariaLabel, /headphones/i);
+  assert.equal(cleanWhileRobotIsLive.state, "off");
   assert.match(live.ariaLabel, /turn it off/i);
+  assert.match(live.ariaLabel, /robot/i);
   assert.match(error.ariaLabel, /permission denied/i);
 });
 

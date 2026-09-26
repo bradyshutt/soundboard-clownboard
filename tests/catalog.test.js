@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 
 import { PAGE_SIZE, clampPage, getPage, pageCount, sounds } from "../src/catalog.js";
 
-test("catalog contains the sixteen stable first-release pads", () => {
-  assert.equal(sounds.length, 16);
+test("catalog contains the sound and live microphone pads", () => {
+  assert.equal(sounds.length, 19);
   assert.deepEqual(
     sounds.map(({ id }) => id),
     [
@@ -27,6 +27,9 @@ test("catalog contains the sixteen stable first-release pads", () => {
       "yee-haw",
       "howdy-partner",
       "microphone",
+      "microphone-robot",
+      "microphone-echo",
+      "microphone-megaphone",
     ],
   );
   assert.equal(new Set(sounds.map(({ id }) => id)).size, sounds.length);
@@ -36,15 +39,19 @@ test("catalog capabilities identify the long-running controls", () => {
   assert.equal(sounds.find(({ id }) => id === "gallop").canLoop, true);
   assert.equal(sounds.find(({ id }) => id === "gallop").loopSrc, "assets/audio/gallop-loop.mp3");
   assert.equal(sounds.find(({ id }) => id === "microphone").kind, "microphone");
+  assert.deepEqual(
+    sounds.filter(({ kind }) => kind === "microphone").map(({ microphoneEffect }) => microphoneEffect),
+    ["clean", "robot", "echo", "megaphone"],
+  );
   assert.equal(sounds.filter(({ kind }) => kind === "speech").length, 2);
 });
 
-test("pages always contain twelve slots and page two has eight placeholders", () => {
+test("pages always contain twelve slots and page two has five placeholders", () => {
   assert.equal(PAGE_SIZE, 12);
   assert.equal(pageCount, 2);
   assert.equal(getPage(0).length, 12);
   assert.equal(getPage(1).length, 12);
-  assert.equal(getPage(1).filter(({ disabled }) => disabled).length, 8);
+  assert.equal(getPage(1).filter(({ disabled }) => disabled).length, 5);
 });
 
 test("page navigation clamps to available boundaries", () => {
