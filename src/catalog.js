@@ -42,7 +42,10 @@ export const sounds = Object.freeze([
   { id: "rising-pad", label: "Big Reveal", icon: "✨", color: "#7756ba", kind: "effect", src: "assets/audio/big-reveal.mp3", volume: 0.45 },
   { id: "yee-haw", label: "Yee-Haw!", icon: "🤠", color: "#ad6f20", kind: "speech" },
   { id: "howdy-partner", label: "Howdy Partner", icon: "🌵", color: "#7d6534", kind: "speech" },
-  { id: "microphone", label: "Live Microphone", icon: "🎙️", color: "#257d69", kind: "microphone" },
+  { id: "microphone", label: "Clean Mic", icon: "🎙️", color: "#257d69", kind: "microphone", microphoneEffect: "clean" },
+  { id: "microphone-robot", label: "Robot Mic", icon: "🤖", color: "#5666ad", kind: "microphone", microphoneEffect: "robot" },
+  { id: "microphone-echo", label: "Echo Mic", icon: "🗣️", color: "#397c9b", kind: "microphone", microphoneEffect: "echo" },
+  { id: "microphone-megaphone", label: "Megaphone Mic", icon: "📣", color: "#a84b32", kind: "microphone", microphoneEffect: "megaphone" },
 ]);
 
 export const pageCount = Math.ceil(sounds.length / PAGE_SIZE);

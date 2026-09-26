@@ -5,11 +5,11 @@ export function getPadPresentation(entry, engineState) {
   const isPlaying = engineState.activeSoundIds?.includes(entry.id) ?? false;
 
   if (entry.kind === "microphone") {
-    const state = engineState.microphoneState;
+    const state = engineState.microphoneId === entry.id ? engineState.microphoneState : "off";
     const labels = {
-      off: "Live microphone is off. Tap to request access. Headphones recommended to avoid feedback.",
-      requesting: "Requesting microphone access. Tap to cancel.",
-      live: "Live microphone is on. Tap to turn it off.",
+      off: `${entry.label} is off. Tap to start. Headphones recommended to avoid feedback.`,
+      requesting: `Requesting microphone access for ${entry.label}. Tap to cancel.`,
+      live: `${entry.label} is on. Tap to turn it off.`,
       error: `${engineState.microphoneError || "Microphone error"} Tap to try again.`,
     };
     const hints = {
@@ -63,7 +63,7 @@ export class AppController {
 
   activate(entry) {
     return entry.kind === "microphone"
-      ? this.engine.toggleMicrophone()
+      ? this.engine.toggleMicrophone(entry.id, entry.microphoneEffect)
       : this.engine.play(entry.id, entry.src, entry.volume);
   }
 
@@ -221,10 +221,14 @@ export function mountApp(documentRef = document, windowRef = window) {
     previousEngineState = engineState;
     engineState = nextState;
     syncEngineState();
-    if (nextState.microphoneState !== previousEngineState.microphoneState) {
+    if (
+      nextState.microphoneState !== previousEngineState.microphoneState
+      || nextState.microphoneId !== previousEngineState.microphoneId
+    ) {
+      const microphoneEntry = getPage(controller.page).find(({ id }) => id === nextState.microphoneId);
       const announcements = {
-        requesting: "Requesting microphone permission.",
-        live: "Live microphone is on. Use headphones to avoid feedback.",
+        requesting: `Requesting microphone permission for ${microphoneEntry?.label ?? "live microphone"}.`,
+        live: `${microphoneEntry?.label ?? "Live microphone"} is on. Use headphones to avoid feedback.`,
         off: "Live microphone is off.",
         error: nextState.microphoneError,
       };
