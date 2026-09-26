@@ -279,6 +279,7 @@ test("gallop stop emits only a coherent inactive snapshot", async () => {
     gallopMode: "off",
     microphoneState: "off",
     microphoneError: "",
+    microphoneId: null,
   }]);
 });
 

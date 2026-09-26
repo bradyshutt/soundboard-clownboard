@@ -5,6 +5,90 @@ function resolveAudioSource(source) {
   return new URL(`../${source}`, import.meta.url).href;
 }
 
+function createDistortionCurve() {
+  return Float32Array.from({ length: 256 }, (_, index) => {
+    const input = (index * 2) / 255 - 1;
+    return Math.tanh(input * 2.8);
+  });
+}
+
+function createMicrophoneGraph(context, stream, output, effect) {
+  const source = context.createMediaStreamSource(stream);
+  const nodes = [source];
+  const gain = (value) => {
+    const node = context.createGain();
+    node.gain.value = value;
+    nodes.push(node);
+    return node;
+  };
+
+  if (effect === "clean") {
+    const level = gain(0.36);
+    source.connect(level);
+    level.connect(output);
+  } else if (effect === "robot") {
+    const ring = gain(0.5);
+    const modulationDepth = gain(0.5);
+    const level = gain(0.42);
+    const oscillator = context.createOscillator();
+    oscillator.frequency.value = 38;
+    nodes.push(oscillator);
+    source.connect(ring);
+    oscillator.connect(modulationDepth);
+    modulationDepth.connect(ring.gain);
+    ring.connect(level);
+    level.connect(output);
+    oscillator.start();
+  } else if (effect === "echo") {
+    const dry = gain(0.3);
+    const wet = gain(0.28);
+    const feedback = gain(0.24);
+    const delay = context.createDelay(1);
+    delay.delayTime.value = 0.18;
+    nodes.push(delay);
+    source.connect(dry);
+    dry.connect(output);
+    source.connect(delay);
+    delay.connect(wet);
+    wet.connect(output);
+    delay.connect(feedback);
+    feedback.connect(delay);
+  } else if (effect === "megaphone") {
+    const highpass = context.createBiquadFilter();
+    highpass.type = "highpass";
+    highpass.frequency.value = 500;
+    const lowpass = context.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = 3_500;
+    const distortion = context.createWaveShaper();
+    distortion.curve = createDistortionCurve();
+    distortion.oversample = "2x";
+    const level = gain(0.3);
+    nodes.push(highpass, lowpass, distortion);
+    source.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(distortion);
+    distortion.connect(level);
+    level.connect(output);
+  } else {
+    throw new Error(`Unknown microphone effect: ${effect}`);
+  }
+
+  return { nodes };
+}
+
+function disconnectMicrophoneGraph(graph) {
+  if (!graph) return;
+  for (const node of [...graph.nodes].reverse()) {
+    try {
+      node.stop?.();
+    } catch {
+      // A source node may already have stopped during browser teardown.
+    }
+    node.disconnect?.();
+  }
+}
+
 function createRecordedEffect({
   AudioClass,
   clearTimeoutFn,
@@ -138,6 +222,8 @@ export class AudioEngine {
     this.gallopTransition = 0;
     this.microphoneState = "off";
     this.microphoneError = "";
+    this.microphoneId = null;
+    this.microphoneEffect = "clean";
     this.microphone = null;
     this.microphoneRequest = 0;
     this.disposed = false;
@@ -155,6 +241,7 @@ export class AudioEngine {
       gallopMode: this.gallopMode,
       microphoneState: this.microphoneState,
       microphoneError: this.microphoneError,
+      microphoneId: this.microphoneId,
     };
   }
 
@@ -342,13 +429,36 @@ export class AudioEngine {
     synth.speak(utterance);
   }
 
-  async toggleMicrophone() {
-    if (this.microphoneState === "live" || this.microphoneState === "requesting") {
-      this.stopMicrophone();
+  async toggleMicrophone(id = "microphone", effect = "clean") {
+    this.assertUsable();
+    if (this.microphoneState === "requesting") {
+      if (this.microphoneId === id) {
+        this.stopMicrophone();
+      } else {
+        this.microphoneId = id;
+        this.microphoneEffect = effect;
+        this.emit();
+      }
+      return;
+    }
+
+    if (this.microphoneState === "live") {
+      if (this.microphoneId === id) {
+        this.stopMicrophone();
+        return;
+      }
+      const graph = createMicrophoneGraph(this.context, this.microphone.stream, this.output, effect);
+      disconnectMicrophoneGraph(this.microphone.graph);
+      this.microphone.graph = graph;
+      this.microphoneId = id;
+      this.microphoneEffect = effect;
+      this.emit();
       return;
     }
 
     const request = ++this.microphoneRequest;
+    this.microphoneId = id;
+    this.microphoneEffect = effect;
     this.microphoneState = "requesting";
     this.microphoneError = "";
     this.emit();
@@ -369,12 +479,8 @@ export class AudioEngine {
         stream.getTracks().forEach((track) => track.stop());
         return;
       }
-      const source = context.createMediaStreamSource(stream);
-      const gain = context.createGain();
-      gain.gain.value = 0.36;
-      source.connect(gain);
-      gain.connect(this.output);
-      this.microphone = { stream, source, gain };
+      const graph = createMicrophoneGraph(context, stream, this.output, this.microphoneEffect);
+      this.microphone = { stream, graph };
       this.microphoneState = "live";
       this.emit();
     } catch (error) {
@@ -391,13 +497,14 @@ export class AudioEngine {
   stopMicrophone() {
     this.microphoneRequest += 1;
     if (this.microphone) {
-      this.microphone.source.disconnect?.();
-      this.microphone.gain.disconnect?.();
+      disconnectMicrophoneGraph(this.microphone.graph);
       this.microphone.stream.getTracks().forEach((track) => track.stop());
       this.microphone = null;
     }
     this.microphoneState = "off";
     this.microphoneError = "";
+    this.microphoneId = null;
+    this.microphoneEffect = "clean";
     this.emit();
   }
 
